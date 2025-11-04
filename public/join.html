@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Unirse — SOLUTECH CLIP</title>
+  <style>
+    :root{--red:#e10600;--ink:#111;--muted:#6a6a6a;--bg:#f5f6f7;--card:#fff;--radius:14px}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);margin:0;color:var(--ink)}
+    .container{max-width:980px;margin:20px auto;padding:12px}
+    .card{background:var(--card);border:1px solid #e9e9ec;border-radius:var(--radius);
+          box-shadow:0 8px 30px rgba(0,0,0,.05);padding:16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #e2e2e6;background:#fff;
+            font-weight:600;color:#6a6a6a}
+    .dot{width:10px;height:10px;border-radius:50%}
+    textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid #dcdce0;border-radius:12px;
+             font-family:ui-monospace,Menlo,Consolas,monospace}
+    .btn{appearance:none;border:0;outline:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn-red{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(225,6,0,.35)}
+    .btn-ghost{background:#fff;border:1px solid #e2e2e6}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div style="font-weight:800">Unirse a sesión — SOLUTECH CLIP</div>
+      <div class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Desconectado</span></div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <label>Clave:
+        <input id="key" placeholder="ABC123" style="padding:8px;border-radius:10px;border:1px solid #dcdce0">
+      </label>
+      <button id="btnJoin" class="btn btn-red">Unirse</button>
+    </div>
+
+    <p id="status" style="color:#6a6a6a"></p>
+
+    <label>Texto</label>
+    <textarea id="txt" placeholder="Esperando mensaje…"></textarea>
+
+    <div class="row" style="margin-top:10px">
+      <button id="copy" class="btn btn-ghost">Copiar</button>
+      <button id="sendBack" class="btn btn-red">Enviar</button>
+      <button id="markRead" class="btn btn-ghost" style="display:none">Marcar leído (single-use)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function wsUrlFor(key){
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;
+}
+const qp = new URLSearchParams(location.search);
+if (qp.get("key")) document.getElementById("key").value = qp.get("key");
+
+let ws=null;
+const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
+function setStatus(ok){ dot.style.background = ok ? "#12b886" : "#aaa"; stxt.textContent = ok ? "Conectado" : "Desconectado"; }
+
+document.getElementById("btnJoin").onclick = async ()=>{
+  const key = (document.getElementById("key").value||"").trim().toUpperCase();
+  if (!key) return alert("Introduce la clave.");
+  const status = document.getElementById("status");
+  status.textContent = "Conectando...";
+
+  ws = new WebSocket(wsUrlFor(key));
+  ws.onopen = ()=> setStatus(true);
+  ws.onclose = ()=> setStatus(false);
+  ws.onmessage = (ev)=>{
+    const msg = JSON.parse(ev.data);
+
+    if (msg.type==="joined"){
+      document.getElementById("txt").value = msg.lastText || "";
+      status.textContent = `Conectado. Expira: ${new Date(msg.expiresAt).toLocaleString()}`;
+      document.getElementById("markRead").style.display = msg.singleUse ? "inline-block" : "none";
+    }
+    if (msg.type==="new-text"){
+      document.getElementById("txt").value = msg.text || "";
+    }
+    if (msg.type==="session-destroyed"){
+      alert("Sesión eliminada.");
+      status.textContent = "Sesión eliminada.";
+      ws.close();
+    }
+    if (msg.type==="error"){
+      alert("Error: " + msg.error);
+      status.textContent = "Error: " + msg.error;
+      ws.close();
+    }
+  };
+};
+
+document.getElementById("copy").onclick = async ()=>{
+  const t = document.getElementById("txt").value || "";
+  await navigator.clipboard.writeText(t);
+  alert("Copiado");
+};
+document.getElementById("sendBack").onclick = ()=>{
+  if (!ws || ws.readyState!==1) return alert("No hay conexión.");
+  ws.send(JSON.stringify({type:"send-text", text: document.getElementById('txt').value}));
+};
+document.getElementById("markRead").onclick = ()=>{
+  if (!ws) return;
+  ws.send(JSON.stringify({type:"read"}));
+};
+</script>
+</body>
+</html>
