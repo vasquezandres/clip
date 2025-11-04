@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SOLUTECH CLIP — v3.3 (E2E automático)</title>
+<style>
+:root{--bg:#f6f7f9;--card:#ffffff;--ink:#101114;--muted:#6a6f7a;--line:#e8eaef;--red:#e10600;--red-d:#b10500;--chip:#ffffff;}
+@media (prefers-color-scheme: dark){:root{--bg:#0f1115;--card:#151821;--ink:#f4f6fb;--muted:#9aa3b2;--line:#262a36;--chip:#1b1f2b;}}
+*{box-sizing:border-box} html,body{height:100%} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,Segoe UI,Roboto,Arial}
+a{color:inherit}
+.header{display:flex;gap:12px;align-items:center;justify-content:center;padding:18px 12px 0}
+.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--red),#ff4d40);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
+.brand{display:flex;flex-direction:column;align-items:center}
+h1{margin:6px 0 0;font-size:22px;letter-spacing:.2px}
+.subtitle{text-align:center;color:var(--muted);margin:4px 0 18px;font-size:13px}
+.container{max-width:980px;margin:0 auto;padding:12px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+@media (max-width:900px){ .grid{grid-template-columns:1fr} }
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.05);padding:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{font-weight:600}
+textarea{width:100%;min-height:160px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-family:ui-monospace,Menlo,Consolas,monospace;background:transparent;color:var(--ink)}
+input[type="text"],input[type="password"],input[type="number"]{padding:10px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.btn{appearance:none;border:0;outline:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(225,6,0,.35)} .btn-red:hover{background:var(--red-d)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-chip{background:var(--chip);border:1px solid var(--line)}
+small.help{color:var(--muted)}
+hr.sep{border:none;border-top:1px dashed var(--line);margin:14px 0}
+.status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-weight:600;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%}
+.qr{max-width:220px;display:block;margin:8px 0;border:1px solid var(--line);border-radius:10px;background:#fff}
+.footer{color:var(--muted);text-align:center;font-size:12px;margin:18px 0}
+.pulse{box-shadow:0 0 0 0 rgba(225,6,0,.4);animation:pulse 1.2s ease-out 1}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(225,6,0,.45)}100%{box-shadow:0 0 0 20px rgba(225,6,0,0)}}
+.history{display:flex;flex-wrap:wrap;gap:8px}
+.history .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);cursor:pointer}
+.filebox{border:1px dashed var(--line);padding:10px;border-radius:12px;text-align:center}
+.filebox input{display:none}
+.filebox label{cursor:pointer}
+.footer-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.footer-links a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="brand">
+    <div class="logo" title="Solutech">S</div>
+    <h1>SOLUTECH CLIP — v3.3 (E2E automático)</h1>
+  </div>
+</div>
+<p class="subtitle">Soluciones reales a problemas tecnológicos • Todo se cifra E2E usando la misma clave de sala</p>
+<div class="container">
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
+        <div class="row">
+          <input id="joinCode" placeholder="Ingresar código de sala" style="width:180px">
+          <button id="btnJoinFromMain" class="btn btn-ghost">Unirse</button>
+          <button id="btnLogout" class="btn btn-ghost" disabled>Cerrar sesión</button>
+        </div>
+      </div>
+      <label>Texto</label>
+      <textarea id="txt" placeholder="Pega aquí…"></textarea>
+      <div class="row" style="margin-top:8px">
+        <label><input type="checkbox" id="singleUse"> Single-use</label>
+        <select id="ttl" title="Expiración" style="padding:10px;border-radius:12px;border:1px solid var(--line)">
+          <option value="300">5 min</option><option value="900" selected>15 min</option><option value="1800">30 min</option><option value="3600">1 hora</option>
+        </select>
+        <div class="row" style="margin-left:auto;gap:8px">
+          <label>Límite adjunto (KB): <input id="fileLimit" type="number" min="10" max="200" value="150" style="width:90px"></label>
+          <small class="help">El servidor aplica un tope máximo</small>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnCreate" class="btn btn-red">Crear nueva sesión</button>
+        <button id="btnUpdate" class="btn btn-ghost" disabled>Actualizar (reenviar)</button>
+        <button id="btnCopy" class="btn btn-ghost">Copiar texto</button>
+      </div>
+      <hr class="sep">
+      <div class="row">
+        <div class="filebox" style="flex:1">
+          <input type="file" id="fileInput" accept=".txt,.json">
+          <label for="fileInput">Adjuntar archivo (.txt o .json)</label>
+        </div>
+        <button id="btnSendFile" class="btn btn-ghost">Enviar archivo</button>
+      </div>
+      <div id="result" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div><strong>Sesiones recientes</strong></div>
+      <div id="history" class="history" style="margin-top:8px"></div>
+      <hr class="sep">
+      <div><strong>Datos de la sesión</strong></div>
+      <div id="sessionInfo" style="font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted);font-size:12px;margin-top:6px">—</div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="footer-links">
+      <a href="https://www.solutechpanama.com" target="_blank">Solutech Panamá</a>
+      <a href="https://www.instagram.com/solutechpanama" target="_blank">Instagram</a>
+      <a href="https://wa.me/50768886778" target="_blank">WhatsApp Soporte</a>
+    </div>
+    <div style="margin-top:6px">© 2025 Solutech Panamá — Hecho con Cloudflare Workers + Durable Objects</div>
+  </div>
+</div>
+<script>
+const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), result=document.getElementById("result"), sessionInfo=document.getElementById("sessionInfo"), historyBox=document.getElementById("history");
+let ws=null, currentKey=null, expiresAt=0, singleUse=false, lastJoinUrl=null;
+function setStatus(connected){dot.style.background=connected?"#12b886":"#aaa";stxt.textContent=connected?`Conectado — ${currentKey}`:"Sin sesión";document.getElementById("btnUpdate").disabled=!connected;document.getElementById("btnLogout").disabled=!connected;}
+function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");historyBox.innerHTML="";list.slice(0,8).forEach(it=>{const chip=document.createElement("div");chip.className="chip";chip.textContent=`${it.key} · ${new Date(it.when).toLocaleString()}`;chip.onclick=()=>window.open(it.joinUrl,"_blank");historyBox.appendChild(chip);});}
+function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
+function qrFor(joinUrl){return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(joinUrl)}`;}
+function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
+function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
+function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
+async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
+async function encryptWithRoomKey(roomKey,plain){const enc=new TextEncoder();const keyMat=await deriveKeyFromRoom(roomKey);const salt=crypto.getRandomValues(new Uint8Array(16));const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["encrypt"]);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(plain));return {cipher:b64(ct),iv:b64(iv),salt:b64(salt),algo:"aes-gcm-pbkdf2-v1"};}
+async function decryptWithRoomKey(roomKey,payload){const {cipher,iv,salt}=payload;const keyMat=await deriveKeyFromRoom(roomKey);const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64toU8(salt),iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["decrypt"]);const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64toU8(iv)},key,b64toU8(cipher));return new TextDecoder().decode(pt);}
+function connectWS(key,onOpenSend){if(ws)try{ws.close();}catch{};ws=new WebSocket(wsUrlFor(key));ws.onopen=()=>{setStatus(true);if(onOpenSend)onOpenSend();};ws.onclose=()=>setStatus(false);ws.onmessage=async (ev)=>{const msg=JSON.parse(ev.data);if(msg.type==="session-destroyed"){alert("Sesión eliminada (single-use).");setStatus(false);currentKey=null;return;}if(msg.type==="error"){alert("Error: "+msg.error);return;}if(msg.type==="joined"){sessionInfo.textContent=`exp=${new Date(msg.expiresAt).toLocaleString()} • singleUse=${msg.singleUse}`;}if(msg.type==="new-e2e"){try{const plain=await decryptWithRoomKey(currentKey,msg.payload.data);const envelope=JSON.parse(plain);if(envelope.kind==="text"){document.getElementById("txt").value=envelope.text||"";}else if(envelope.kind==="file"){const a=document.createElement("a");a.href=`data:${envelope.mime};base64,${envelope.dataBase64}`;a.download=envelope.name||"archivo";a.textContent=`Descargar adjunto: ${envelope.name} (${envelope.mime})`;a.style.display="inline-block";a.style.marginTop="6px";result.prepend(a);} }catch{document.getElementById("txt").value="(No se pudo descifrar el contenido con esta clave)";}}};}
+async function createSession(){const text=document.getElementById("txt").value.trim();if(!text)return alert("Pega el texto primero.");singleUse=document.getElementById("singleUse").checked;const ttl=parseInt(document.getElementById("ttl").value,10);const r=await fetch("/api/create",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({singleUse,ttlSeconds:ttl})});const data=await r.json();if(!data.ok)return alert("No se pudo crear la sesión.");currentKey=data.key;expiresAt=data.expiresAt;lastJoinUrl=data.joinUrl;const qr=qrFor(lastJoinUrl);const waUrl=`https://wa.me/?text=${encodeURIComponent(lastJoinUrl)}`;result.innerHTML=`<div><div><strong>Clave (también E2E):</strong> <code>${currentKey}</code></div><img class="qr" src="${qr}" alt="QR"><div class="row" style="gap:6px;flex-wrap:wrap"><a href="${lastJoinUrl}" target="_blank">${lastJoinUrl}</a><button id="copyurl" class="btn btn-chip">Copiar URL</button><button id="copykey" class="btn btn-chip">Copiar clave</button><button id="openjoin" class="btn btn-chip">Abrir join</button><a class="btn btn-chip" target="_blank" href="${waUrl}">Compartir WhatsApp</a></div><small class="help">Expira: ${new Date(expiresAt).toLocaleString()}</small></div>`;document.getElementById("copyurl").onclick=()=>navigator.clipboard.writeText(lastJoinUrl);document.getElementById("copykey").onclick=()=>navigator.clipboard.writeText(currentKey);document.getElementById("openjoin").onclick=()=>window.open(lastJoinUrl,"_blank");saveHistory(currentKey,lastJoinUrl);connectWS(currentKey,async ()=>{const envelope=JSON.stringify({kind:"text",text});const encrypted=await encryptWithRoomKey(currentKey,envelope);const file_limit_kb=Number(document.getElementById("fileLimit").value||150);ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:encrypted},file_limit_kb}));});}
+function updateSend(){if(!ws||ws.readyState!==1)return alert("No hay sesión activa.");const text=document.getElementById("txt").value.trim();if(!text)return alert("Nada que enviar.");(async ()=>{const envelope=JSON.stringify({kind:"text",text});const encrypted=await encryptWithRoomKey(currentKey,envelope);const file_limit_kb=Number(document.getElementById("fileLimit").value||150);ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:encrypted},file_limit_kb}));})();}
+function logout(){try{ws&&ws.close();}catch{};ws=null;currentKey=null;lastJoinUrl=null;setStatus(false);sessionInfo.textContent="—";}
+async function joinFromMain(){const code=(document.getElementById("joinCode").value||"").trim().toUpperCase();if(!code)return alert("Ingresa un código");currentKey=code;connectWS(code);}
+document.getElementById("btnSendFile").onclick=async ()=>{if(!ws||ws.readyState!==1)return alert("No hay sesión activa.");const fi=document.getElementById("fileInput");if(!fi.files||!fi.files.length)return alert("Selecciona un archivo .txt o .json");const f=fi.files[0];const limitKB=Number(document.getElementById("fileLimit").value||150);if(f.size>limitKB*1024)return alert("Archivo excede el límite configurado.");const arr=new Uint8Array(await f.arrayBuffer());const b64=btoa(String.fromCharCode(...arr));const envelope=JSON.stringify({kind:"file",name:f.name,mime:(f.type||"text/plain"),dataBase64:b64});const encrypted=await encryptWithRoomKey(currentKey,envelope);ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"file",data:encrypted},file_limit_kb:limitKB}));alert("Archivo enviado");};
+document.getElementById("btnCreate").onclick=createSession;document.getElementById("btnUpdate").onclick=updateSend;document.getElementById("btnCopy").onclick=()=>navigator.clipboard.writeText(document.getElementById("txt").value);document.getElementById("btnLogout").onclick=logout;document.getElementById("btnJoinFromMain").onclick=joinFromMain;
+const qp=new URLSearchParams(location.search);if(qp.get("key")){currentKey=qp.get("key").toUpperCase();document.getElementById("joinCode").value=currentKey;connectWS(currentKey);}
+function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");historyBox.innerHTML="";list.slice(0,8).forEach(it=>{const chip=document.createElement("div");chip.className="chip";chip.textContent=`${it.key} · ${new Date(it.when).toLocaleString()}`;chip.onclick=()=>window.open(it.joinUrl,"_blank");historyBox.appendChild(chip);});}
+function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
+loadHistory();
+</script>
+</body>
+</html>
