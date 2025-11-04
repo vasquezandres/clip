@@ -1,165 +1,123 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>SOLUTECH CLIP — Transferencia instantánea</title>
-  <style>
-    :root{
-      --red:#e10600; --red-d:#b10500; --ink:#111; --muted:#6a6a6a; --bg:#f5f6f7; --card:#fff;
-      --radius:14px;
-    }
-    *{box-sizing:border-box}
-    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);margin:0;color:var(--ink)}
-    .header{display:flex;gap:12px;align-items:center;justify-content:center;padding:18px 12px 0}
-    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--red),#ff4d40);
-          display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
-    h1{margin:0;font-size:26px}
-    .subtitle{text-align:center;color:var(--muted);margin:6px 0 18px;font-size:14px}
-    .container{max-width:980px;margin:0 auto;padding:12px}
-    .card{background:var(--card);border:1px solid #e9e9ec;border-radius:var(--radius);
-          box-shadow:0 8px 30px rgba(0,0,0,.05);padding:16px;transition:box-shadow .3s ease}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    label{font-weight:600}
-    textarea{width:100%;min-height:140px;padding:10px 12px;border:1px solid #dcdce0;border-radius:12px;
-             font-family:ui-monospace,Menlo,Consolas,monospace}
-    .btn{appearance:none;border:0;outline:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
-    .btn-red{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(225,6,0,.35)}
-    .btn-red:hover{background:var(--red-d)}
-    .btn-ghost{background:#fff;border:1px solid #e2e2e6;color:var(--ink)}
-    select{padding:10px;border-radius:12px;border:1px solid #dcdce0}
-    .kv{margin:8px 0 0} .kv code{font-weight:700}
-    .status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #e2e2e6;background:#fff;
-            font-weight:600;color:var(--muted)}
-    .dot{width:10px;height:10px;border-radius:50%}
-    .qr{max-width:240px;display:block;margin:12px 0;border:1px solid #eee;border-radius:10px;background:#fff}
-    .footer{color:#8a8a92;text-align:center;font-size:13px;margin:18px 0}
-    hr.sep{border:none;border-top:1px dashed #e5e5ea;margin:14px 0}
-    .pulse { box-shadow: 0 0 0 0 rgba(225,6,0,.4); animation: pulse 1.2s ease-out 1; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(225,6,0,.45); }
-      100% { box-shadow: 0 0 0 20px rgba(225,6,0,0); }
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SOLUTECH CLIP — Transferencia instantánea</title>
+<style>
+:root{--bg:#f6f7f9;--card:#ffffff;--ink:#101114;--muted:#6a6f7a;--line:#e8eaef;--red:#e10600;--red-d:#b10500;--chip:#ffffff;}
+@media (prefers-color-scheme: dark){:root{--bg:#0f1115;--card:#151821;--ink:#f4f6fb;--muted:#9aa3b2;--line:#262a36;--chip:#1b1f2b;}}
+*{box-sizing:border-box} html,body{height:100%} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,Segoe UI,Roboto,Arial}
+a{color:inherit}
+.header{display:flex;gap:12px;align-items:center;justify-content:center;padding:18px 12px 0}
+.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--red),#ff4d40);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+h1{margin:0;font-size:22px;letter-spacing:.2px}
+.subtitle{text-align:center;color:var(--muted);margin:6px 0 18px;font-size:13px}
+.container{max-width:980px;margin:0 auto;padding:12px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+@media (max-width:900px){ .grid{grid-template-columns:1fr} }
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.05);padding:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{font-weight:600}
+textarea{width:100%;min-height:160px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-family:ui-monospace,Menlo,Consolas,monospace;background:transparent;color:var(--ink)}
+input[type="text"],input[type="password"]{padding:10px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.btn{appearance:none;border:0;outline:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(225,6,0,.35)} .btn-red:hover{background:var(--red-d)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-chip{background:var(--chip);border:1px solid var(--line)}
+small.help{color:var(--muted)}
+hr.sep{border:none;border-top:1px dashed var(--line);margin:14px 0}
+.status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-weight:600;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%}
+.qr{max-width:220px;display:block;margin:8px 0;border:1px solid var(--line);border-radius:10px;background:#fff}
+.footer{color:var(--muted);text-align:center;font-size:12px;margin:18px 0}
+.pulse{box-shadow:0 0 0 0 rgba(225,6,0,.4);animation:pulse 1.2s ease-out 1}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(225,6,0,.45)}100%{box-shadow:0 0 0 20px rgba(225,6,0,0)}}
+.history{display:flex;flex-wrap:wrap;gap:8px}
+.history .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);cursor:pointer}
+.filebox{border:1px dashed var(--line);padding:10px;border-radius:12px;text-align:center}
+.filebox input{display:none}
+.filebox label{cursor:pointer}
+</style>
 </head>
 <body>
-  <div class="header">
-    <div class="logo">S</div>
-    <h1>SOLUTECH CLIP — Transferencia instantánea</h1>
-  </div>
-  <p class="subtitle">Soluciones reales a problemas tecnológicos • Enlace temporal (clave + QR) para compartir texto entre dispositivos</p>
-
-  <div class="container">
+<div class="header"><div class="logo">S</div><h1>SOLUTECH CLIP — Transferencia instantánea</h1></div>
+<p class="subtitle">Soluciones reales a problemas tecnológicos • Enlace temporal (clave + QR) para compartir texto/archivos entre dispositivos</p>
+<div class="container">
+  <div class="grid">
     <div class="card">
       <div class="row" style="justify-content:space-between;margin-bottom:8px">
         <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
+        <div class="row">
+          <input id="joinCode" placeholder="Ingresar código de sala" style="width:180px">
+          <button id="btnJoinFromMain" class="btn btn-ghost">Unirse</button>
+          <button id="btnLogout" class="btn btn-ghost">Cerrar sesión</button>
+        </div>
       </div>
-
       <label>Texto</label>
       <textarea id="txt" placeholder="Pega aquí…"></textarea>
-
       <div class="row" style="margin-top:8px">
-        <label><input type="checkbox" id="singleUse"> Single-use (se destruye al leer)</label>
-        <select id="ttl" title="Tiempo de expiración">
-          <option value="300">5 min</option>
-          <option value="600" selected>10 min</option>
-          <option value="1800">30 min</option>
-          <option value="3600">1 hora</option>
+        <label><input type="checkbox" id="singleUse"> Single-use</label>
+        <select id="ttl" title="Expiración" style="padding:10px;border-radius:12px;border:1px solid var(--line)">
+          <option value="300">5 min</option><option value="900" selected>15 min</option><option value="1800">30 min</option><option value="3600">1 hora</option>
         </select>
+        <div class="row" style="margin-left:auto;gap:8px">
+          <input id="e2ePass" placeholder="Clave E2E (opcional)" type="password" style="width:200px">
+          <small class="help">Si la pones, el texto se cifrará extremo a extremo</small>
+        </div>
       </div>
-
       <div class="row" style="margin-top:10px">
         <button id="btnCreate" class="btn btn-red">Crear nueva sesión</button>
         <button id="btnUpdate" class="btn btn-ghost" disabled>Actualizar (reenviar)</button>
         <button id="btnCopy" class="btn btn-ghost">Copiar texto</button>
       </div>
-
-      <div id="result" class="kv"></div>
-    </div>
-
-    <div class="footer">Solutech Panamá © 2025 — Cloudflare Workers + Durable Objects</div>
-  </div>
-
-<script>
-let ws=null, currentKey=null, expiresAt=0, singleUse=false;
-const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), result=document.getElementById("result");
-
-function wsUrlFor(key){
-  const proto = location.protocol === "https:" ? "wss" : "ws";
-  return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;
-}
-function setStatus(connected){
-  dot.style.background = connected ? "#12b886" : "#aaa";
-  stxt.textContent = connected ? `Conectado — ${currentKey}` : "Sin sesión";
-  document.getElementById("btnUpdate").disabled = !connected;
-}
-
-async function createSession(){
-  const text = document.getElementById("txt").value.trim();
-  if (!text) return alert("Pega el texto primero.");
-  singleUse = document.getElementById("singleUse").checked;
-  const ttl = parseInt(document.getElementById("ttl").value,10);
-
-  const r = await fetch("/api/create", {
-    method:"POST",
-    headers:{"content-type":"application/json"},
-    body:JSON.stringify({singleUse, ttlSeconds:ttl})
-  });
-  const data = await r.json();
-  if (!data.ok) return alert("No se pudo crear la sesión.");
-
-  currentKey = data.key; expiresAt = data.expiresAt; singleUse = !!data.singleUse;
-
-  const joinUrl = data.joinUrl;
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(joinUrl)}`;
-
-  result.innerHTML = `
-    <div style="margin-top:8px">
-      <div><strong>Clave:</strong> <code>${currentKey}</code></div>
-      <img class="qr" src="${qrSrc}" alt="QR">
-      <div class="row" style="align-items:center;gap:8px">
-        <a href="${joinUrl}" target="_blank">${joinUrl}</a>
-        <button id="copyurl" class="btn btn-ghost">Copiar URL</button>
-        <button id="copykey" class="btn btn-ghost">Copiar clave</button>
-        <button id="openjoin" class="btn btn-ghost">Abrir join</button>
-      </div>
-      <div class="subtitle" style="margin:6px 0">Expira: ${new Date(expiresAt).toLocaleString()}</div>
       <hr class="sep">
+      <div class="row">
+        <div class="filebox" style="flex:1">
+          <input type="file" id="fileInput" accept=".txt,.json">
+          <label for="fileInput">Adjuntar archivo (.txt o .json, máx. 100KB)</label>
+        </div>
+        <button id="btnSendFile" class="btn btn-ghost">Enviar archivo</button>
+      </div>
+      <div id="result" style="margin-top:10px"></div>
     </div>
-  `;
-  document.getElementById("copyurl").onclick = ()=>navigator.clipboard.writeText(joinUrl);
-  document.getElementById("copykey").onclick = ()=>navigator.clipboard.writeText(currentKey);
-  document.getElementById("openjoin").onclick = ()=>window.open(joinUrl, "_blank");
-
-  if (ws) try{ ws.close(); }catch{}
-  ws = new WebSocket(wsUrlFor(currentKey));
-  ws.onopen = ()=>{ setStatus(true); ws.send(JSON.stringify({type:"send-text", text})); };
-  ws.onclose = ()=> setStatus(false);
-  ws.onmessage = (ev)=>{
-    const msg = JSON.parse(ev.data);
-    if (msg.type==="session-destroyed"){ alert("Sesión eliminada (single-use)."); setStatus(false); currentKey=null; return; }
-    if (msg.type==="error"){ alert("Error: " + msg.error); return; }
-
-    // 📥 Bidireccional: si desde JOIN envían texto, llega aquí:
-    if (msg.type==="new-text"){
-      const ta = document.getElementById("txt");
-      ta.value = msg.text || "";
-      const card = document.querySelector(".card");
-      if (card) { card.classList.add("pulse"); setTimeout(()=>card.classList.remove("pulse"), 1200); }
-    }
-  };
-}
-
-function updateSend(){
-  if (!ws || ws.readyState!==1) return alert("No hay sesión activa.");
-  const text = document.getElementById("txt").value.trim();
-  if (!text) return alert("Nada que enviar.");
-  ws.send(JSON.stringify({type:"send-text", text}));
-}
-
-document.getElementById("btnCreate").onclick = createSession;
-document.getElementById("btnUpdate").onclick = updateSend;
-document.getElementById("btnCopy").onclick = ()=>navigator.clipboard.writeText(document.getElementById("txt").value);
+    <div class="card">
+      <div><strong>Sesiones recientes</strong></div>
+      <div id="history" class="history" style="margin-top:8px"></div>
+      <hr class="sep">
+      <div><strong>Datos de la sesión</strong></div>
+      <div id="sessionInfo" style="font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted);font-size:12px;margin-top:6px">—</div>
+    </div>
+  </div>
+  <div class="footer">Solutech Panamá © 2025 — Cloudflare Workers + Durable Objects</div>
+</div>
+<script>
+const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), result=document.getElementById("result"), sessionInfo=document.getElementById("sessionInfo"), historyBox=document.getElementById("history");
+let ws=null, currentKey=null, expiresAt=0, singleUse=false, lastJoinUrl=null;
+function setStatus(connected){dot.style.background=connected?"#12b886":"#aaa";stxt.textContent=connected?`Conectado — ${currentKey}`:"Sin sesión";document.getElementById("btnUpdate").disabled=!connected;document.getElementById("btnLogout").disabled=!connected;}
+function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");historyBox.innerHTML="";list.slice(0,8).forEach(it=>{const chip=document.createElement("div");chip.className="chip";chip.textContent=`${it.key} · ${new Date(it.when).toLocaleString()}`;chip.onclick=()=>window.open(it.joinUrl,"_blank");historyBox.appendChild(chip);});}
+function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
+function qrFor(joinUrl){return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(joinUrl)}`;}
+async function deriveKey(pass){const enc=new TextEncoder();const salt=crypto.getRandomValues(new Uint8Array(16));const keyMaterial=await crypto.subtle.importKey("raw",enc.encode(pass),"PBKDF2",false,["deriveKey"]);const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMaterial,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);return {key,salt};}
+async function importKeyFromSalt(pass,salt){const enc=new TextEncoder();const keyMaterial=await crypto.subtle.importKey("raw",enc.encode(pass),"PBKDF2",false,["deriveKey"]);const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMaterial,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);return key;}
+function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
+function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
+async function e2eEncrypt(plain,pass){const {key,salt}=await deriveKey(pass);const iv=crypto.getRandomValues(new Uint8Array(12));const enc=new TextEncoder();const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(plain));return {cipher:b64(ct),iv:b64(iv),salt:b64(salt),algo:"aes-gcm-pbkdf2-v1"};}
+async function e2eDecrypt(payload,pass){const {cipher,iv,salt}=payload;const key=await importKeyFromSalt(pass,b64toU8(salt));const ptBuf=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64toU8(iv)},key,b64toU8(cipher));return new TextDecoder().decode(ptBuf);}
+function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
+function connectWS(key,onopenSend){if(ws)try{ws.close();}catch{};ws=new WebSocket(wsUrlFor(key));ws.onopen=()=>{setStatus(true);if(onopenSend)onopenSend();};ws.onclose=()=>setStatus(false);ws.onmessage=async (ev)=>{const msg=JSON.parse(ev.data);if(msg.type==="session-destroyed"){alert("Sesión eliminada (single-use).");setStatus(false);currentKey=null;return;}if(msg.type==="error"){alert("Error: "+msg.error);return;}if(msg.type==="joined"){const meta=`key=${msg.key} • exp=${new Date(msg.expiresAt).toLocaleString()} • singleUse=${msg.singleUse}`;sessionInfo.textContent=meta;if(msg.lastText && msg.lastText!=="(e2e)"){document.getElementById("txt").value=msg.lastText;}}if(msg.type==="new-text"){document.getElementById("txt").value=msg.text||"";pulse();}if(msg.type==="new-text-e2e"){const pass=document.getElementById("e2ePass").value;if(!pass){document.getElementById("txt").value="(Contenido cifrado: ingresa la clave E2E)";return;}try{const plain=await e2eDecrypt(msg.payload,pass);document.getElementById("txt").value=plain;pulse();}catch{document.getElementById("txt").value="(No se pudo descifrar — clave E2E incorrecta)";}}if(msg.type==="new-file"){const {name,mime="application/octet-stream",dataBase64}=msg.file||{};const a=document.createElement("a");a.href=`data:${mime};base64,${dataBase64}`;a.download=name||"archivo";a.textContent=`Descargar adjunto: ${name} (${mime})`;a.style.display="inline-block";a.style.marginTop="6px";result.prepend(a);pulse();}};}
+function pulse(){const card=document.querySelector(".card");if(card){card.classList.add("pulse");setTimeout(()=>card.classList.remove("pulse"),1200);}}
+async function createSession(){const text=document.getElementById("txt").value.trim();if(!text)return alert("Pega el texto primero.");singleUse=document.getElementById("singleUse").checked;const ttl=parseInt(document.getElementById("ttl").value,10);const r=await fetch("/api/create",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({singleUse,ttlSeconds:ttl})});const data=await r.json();if(!data.ok)return alert("No se pudo crear la sesión.");currentKey=data.key;expiresAt=data.expiresAt;lastJoinUrl=data.joinUrl;const qr=qrFor(lastJoinUrl);result.innerHTML=`<div><div><strong>Clave:</strong> <code>${currentKey}</code></div><img class="qr" src="${qr}" alt="QR"><div class="row" style="gap:6px;flex-wrap:wrap"><a href="${lastJoinUrl}" target="_blank">${lastJoinUrl}</a><button id="copyurl" class="btn btn-chip">Copiar URL</button><button id="copykey" class="btn btn-chip">Copiar clave</button><button id="openjoin" class="btn btn-chip">Abrir join</button></div><small class="help">Expira: ${new Date(expiresAt).toLocaleString()}</small></div>`;document.getElementById("copyurl").onclick=()=>navigator.clipboard.writeText(lastJoinUrl);document.getElementById("copykey").onclick=()=>navigator.clipboard.writeText(currentKey);document.getElementById("openjoin").onclick=()=>window.open(lastJoinUrl,"_blank");saveHistory(currentKey,lastJoinUrl);connectWS(currentKey,async ()=>{const pass=document.getElementById("e2ePass").value;if(pass){const payload=await e2eEncrypt(text,pass);ws.send(JSON.stringify({type:"send-text-e2e",payload}));}else{ws.send(JSON.stringify({type:"send-text",text}));}});}
+function updateSend(){if(!ws||ws.readyState!==1)return alert("No hay sesión activa.");const text=document.getElementById("txt").value.trim();if(!text)return alert("Nada que enviar.");const pass=document.getElementById("e2ePass").value;(async ()=>{if(pass){const payload=await e2eEncrypt(text,pass);ws.send(JSON.stringify({type:"send-text-e2e",payload}));}else{ws.send(JSON.stringify({type:"send-text",text}));}})();}
+function logout(){try{ws&&ws.close();}catch{};ws=null;currentKey=null;lastJoinUrl=null;setStatus(false);sessionInfo.textContent="—";}
+async function joinFromMain(){const code=(document.getElementById("joinCode").value||"").trim().toUpperCase();if(!code)return alert("Ingresa un código");currentKey=code;connectWS(code);}
+document.getElementById("btnSendFile").onclick=async ()=>{if(!ws||ws.readyState!==1)return alert("No hay sesión activa.");const fi=document.getElementById("fileInput");if(!fi.files||!fi.files.length)return alert("Selecciona un archivo .txt o .json");const f=fi.files[0];if(f.size>100*1024)return alert("Archivo demasiado grande (>100KB)");const arr=new Uint8Array(await f.arrayBuffer());let b64=btoa(String.fromCharCode(...arr));ws.send(JSON.stringify({type:"send-file",file:{name:f.name,mime:f.type||"text/plain",size:f.size,dataBase64:b64}}));alert("Archivo enviado");};
+document.getElementById("btnCreate").onclick=createSession;
+document.getElementById("btnUpdate").onclick=updateSend;
+document.getElementById("btnCopy").onclick=()=>navigator.clipboard.writeText(document.getElementById("txt").value);
+document.getElementById("btnLogout").onclick=logout;
+document.getElementById("btnJoinFromMain").onclick=joinFromMain;
+loadHistory();
 </script>
 </body>
 </html>

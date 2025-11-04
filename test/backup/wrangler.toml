@@ -7,12 +7,12 @@ bindings = [
   { name = "ROOMS", class_name = "RoomDO" }
 ]
 
+# Si YA aplicaste v1, puedes dejarlo tal cual.
+# Si te diera conflicto por migración repetida,
+# comenta temporalmente esta sección para re-deploy.
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["RoomDO"]
 
 [assets]
 directory = "public"
-
-[vars]
-MAX_FILE_KB = "200"
