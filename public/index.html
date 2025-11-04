@@ -1,1 +1,292 @@
-<!doctype html><html><head><meta charset='utf-8'/><meta name='viewport' content='width=device-width,initial-scale=1'/><title>Solutech Clip v3.4.2</title><link rel='stylesheet' href='styles.css'><link rel='icon' href='favicon.ico'></head><body><div id='app'>Reemplace este archivo con la versión completa si lo desea. Esta es una versión mínima que acompaña al Worker.</div></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SOLUTECH CLIP — v3.5</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.ico">
+</head>
+<body>
+<div class="header">
+  <div class="brand">
+    <div class="logo"><img src="favicon.ico" alt="S"></div>
+    <h1>SOLUTECH CLIP — v3.5</h1>
+  </div>
+  <div class="controls">
+    <select id="themeSel" title="Tema">
+      <option value="system">Sistema</option>
+      <option value="light" selected>Claro</option>
+      <option value="dark">Oscuro</option>
+      <option value="blue">Solutech Azul</option>
+    </select>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
+        <div class="row">
+          <input id="joinCode" class="input-strong" placeholder="Código de sala (ABC123)" style="width:220px" maxlength="6">
+          <button id="btnJoinFromMain" class="btn btn-ghost"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
+          <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+        </div>
+      </div>
+
+      <label>Texto</label>
+      <textarea id="txt" placeholder="Pega aquí…"></textarea>
+
+      <div class="row" style="margin-top:10px">
+        <input id="customKey" class="input-strong" placeholder="Clave manual (opcional, ej. ABC123)" style="width:260px" maxlength="6">
+        <button id="btnCreate" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Crear & Enviar</button>
+        <button id="btnUpdate" class="btn btn-ghost" disabled><i class="fa-solid fa-rotate-right"></i> Reenviar</button>
+        <button id="btnCopy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
+      </div>
+
+      <details class="disclosure" id="adv">
+        <summary><i class="fa-solid fa-sliders"></i> Opciones avanzadas</summary>
+        <div class="content">
+          <div class="row">
+            <label><input type="checkbox" id="singleUse" checked> Single-use (se destruye al leer)</label>
+            <label>Expira
+              <select id="ttl" title="Expiración">
+                <option value="300">5 min</option>
+                <option value="900" selected>15 min</option>
+                <option value="1800">30 min</option>
+                <option value="3600">1 hora</option>
+              </select>
+            </label>
+          </div>
+          <hr class="sep">
+          <div class="row">
+            <div class="filebox" style="flex:1">
+              <input type="file" id="fileInput" accept=".txt,.json">
+              <label for="fileInput"><i class="fa-solid fa-paperclip"></i> Adjuntar (.txt/.json)</label>
+            </div>
+            <label>Límite adjunto (KB): <input id="fileLimit" class="input-strong" type="number" min="10" max="200" value="150" style="width:90px"></label>
+            <button id="btnSendFile" class="btn btn-ghost"><i class="fa-solid fa-file-arrow-up"></i> Enviar archivo</button>
+          </div>
+        </div>
+      </details>
+
+      <hr class="sep">
+      <div id="result"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Sesiones recientes</strong>
+        <button id="btnClearHist" class="btn btn-chip"><i class="fa-solid fa-broom"></i> Limpiar</button>
+      </div>
+      <div id="history" class="history" style="margin-top:8px"></div>
+      <hr class="sep">
+      <div><strong>Datos de la sesión</strong></div>
+      <div id="sessionInfo" style="font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted);font-size:12px;margin-top:6px">—</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2025 Solutech Panamá — Cloudflare Workers + Durable Objects •
+    <a href="https://www.solutechpanama.com" target="_blank">Web</a> •
+    <a href="https://wa.me/50768886778" target="_blank">WhatsApp Soporte</a>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- QRCode (ligero) -->
+<script>
+/* qrcode.js mínimo (versión comprimida recortada) */
+!function(o){function t(o){this.mode=c.MODE_8BIT_BYTE,this.data=o,this.parsedData=[];for(var t=0,e=this.data.length;t<e;t++){var r=[],n=this.data.charCodeAt(t);n>65536?(r[0]=240|(1835008&n)>>>18,r[1]=128|(258048&n)>>>12,r[2]=128|(4032&n)>>>6,r[3]=128|63&n):n>2048?(r[0]=224|(61440&n)>>>12,r[1]=128|(4032&n)>>>6,r[2]=128|63&n):n>128?(r[0]=192|(1984&n)>>>6,r[1]=128|63&n):r[0]=n,this.parsedData.push(r)}this.parsedData=Array.prototype.concat.apply([],this.parsedData)}var e=function(){var o=function(o,t){this.totalCount=o,this.dataCount=t};return{getRSBlocks:function(t,e){var r=function(t,e){switch(e){case 1:return n[t];case 0:default:return r=t-1,n[r]}var r},n=[[new o(1,19)],[new o(1,34)],[new o(1,55)],[new o(1,80)]];return r(t,e)}}}(),r={PAD0:236,PAD1:17},n=function(){function o(o){this.buffer=[],this.length=0,o&&this.put(o,8)}return o.prototype.getBuffer=function(){return this.buffer},o.prototype.put=function(o,t){for(var e=0;e<t;e++)this.putBit(1==(o>>>t-e-1&1))},o.prototype.putBit=function(o){var t=this.length>>3;this.buffer.length<=t&&this.buffer.push(0),o&&(this.buffer[t]|=128>>>this.length%8),this.length++},o}(),c={MODE_8BIT_BYTE:4};t.prototype.getLength=function(){return this.parsedData.length},t.prototype.write=function(o){for(var t=0,e=this.parsedData.length;t<e;t++)o.put(this.parsedData[t],8)};function i(o){this.typeNumber=1,this.errorCorrectLevel=1,this.modules=null,this.moduleCount=0,this.dataList=[],o&&this.addData(o)}i.prototype.addData=function(o){this.dataList.push(new t(o))},i.prototype.make=function(){this.moduleCount=21,this.modules=new Array(this.moduleCount);for(var o=0;o<this.moduleCount;o++){this.modules[o]=new Array(this.moduleCount);for(var t=0;t<this.moduleCount;t++)this.modules[o][t]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.mapData(this.createData())},i.prototype.setupPositionProbePattern=function(o,t){for(var e=-1;e<=7;e++)if(!(o+e<=-1||this.moduleCount<=o+e))for(var r=-1;r<=7;r++)t+r<=-1||this.moduleCount<=t+r||(this.modules[o+e][t+r]=e>=0&&e<=6&&(0==r||6==r)||r>=0&&r<=6&&(0==e||6==e)||e>=2&&e<=4&&r>=2&&r<=4)},i.prototype.mapData=function(o){for(var t=-1,e=this.moduleCount-1,r=7,n=0,c=this.moduleCount-1;c>0;c-=2)for(6==c&&c--;;){for(var i=0;i<2;i++)if(null==this.modules[c-i][e]){var s=!1;n<o.length&&(s=1==(o[n]>>>r&1)),this.modules[c-i][e]=s,0==--r&&(n++,r=7)}if((e+=t)<0||this.moduleCount<=e){e-=t,t=-t;break}}},i.prototype.createData=function(){for(var o=new n,t=0;t<this.dataList.length;t++){var c=this.dataList[t];o.put(c.mode,4),o.put(c.getLength(),8),c.write(o)}for(;o.length+4<=8;)o.put(0,4);for(;o.length%8!=0;)o.put(0,1);for(;o.getBuffer().length<e.getRSBlocks(1,0)[0].dataCount;)o.put(r.PAD0,8),o.getBuffer().length<e.getRSBlocks(1,0)[0].dataCount&&o.put(r.PAD1,8);return o.getBuffer()};function s(o,t){var e=new i(o);return e.make(),function(o,t){var e=document.createElement("canvas");e.width=t,e.height=t;for(var r=e.getContext("2d"),n=t/21,c=0;c<21;c++)for(var i=0;i<21;i++)r.fillStyle=o.modules[i][c]?"#000":"#fff",r.fillRect(i*n,c*n,n,n);return e}(e,t)}o.QRMini={draw:function(o,t){return s(t||"",o||240)}}}(window);
+</script>
+
+<script>
+/* ====== Tema ====== */
+const root = document.documentElement;
+const themeSel = document.getElementById('themeSel');
+function applyTheme(val){ root.className=''; if(val==='light') root.classList.add('light'); else if(val==='blue') root.classList.add('blue'); }
+themeSel.addEventListener('change', ()=> applyTheme(themeSel.value));
+
+/* ====== Utilidades ====== */
+const toasts=document.getElementById('toasts');
+function showToast(msg, kind='info', timeout=2200){
+  const d=document.createElement('div');
+  d.className='toast ' + (kind==='success'?'success':kind==='error'?'error':'');
+  d.innerHTML=`<i class="fa-solid ${kind==='success'?'fa-circle-check':kind==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${msg}`;
+  toasts.appendChild(d); setTimeout(()=>d.remove(), timeout);
+}
+const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), result=document.getElementById("result"), sessionInfo=document.getElementById("sessionInfo"), historyBox=document.getElementById("history");
+let ws=null, currentKey=null, expiresAt=0, singleUse=true, lastJoinUrl=null;
+
+function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");historyBox.innerHTML="";list.slice(0,8).forEach(it=>{const chip=document.createElement("div");chip.className="chip";chip.textContent=`${it.key} · ${new Date(it.when).toLocaleString()}`;chip.onclick=()=>window.open(it.joinUrl,"_blank");historyBox.appendChild(chip);});}
+function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
+document.getElementById('btnClearHist').onclick=()=>{localStorage.removeItem('clip_history');loadHistory();showToast('Historial borrado','success');};
+function setStatus(ok){dot.style.background=ok?"var(--ok)":"#aaa";stxt.textContent=ok?`Conectado — ${currentKey}`:"Sin sesión";document.getElementById("btnUpdate").disabled=!ok;document.getElementById("btnLogout").disabled=!ok;}
+
+/* ====== Cripto ====== */
+function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
+function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
+async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
+async function encryptWithRoomKey(roomKey,plain){
+  const enc=new TextEncoder();
+  const keyMat=await deriveKeyFromRoom(roomKey);
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["encrypt"]);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(plain));
+  return {cipher:b64(ct),iv:b64(iv),salt:b64(salt),alg:"AES-GCM/PBKDF2"};
+}
+async function decryptWithRoomKey(roomKey,payload){
+  const keyMat=await deriveKeyFromRoom(roomKey);
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64toU8(payload.salt),iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["decrypt"]);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64toU8(payload.iv)},key,b64toU8(payload.cipher));
+  return new TextDecoder().decode(pt);
+}
+
+/* ====== WebSocket ====== */
+function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
+function connectWS(key,onOpenSend){
+  if(ws) try{ ws.close(); }catch{}
+  ws=new WebSocket(wsUrlFor(key));
+  ws.onopen=()=>{ setStatus(true); if(onOpenSend) onOpenSend(); showToast('Conectado','success'); };
+  ws.onclose=()=>{ setStatus(false); showToast('Desconectado'); };
+  ws.onmessage=async (ev)=>{
+    const msg=JSON.parse(ev.data);
+    if(msg.type==="session-destroyed"){ showToast('Sesión eliminada (single-use)','info'); setStatus(false); currentKey=null; return; }
+    if(msg.type==="error"){ showToast('Error: '+msg.error,'error'); return; }
+    if(msg.type==="joined"){ sessionInfo.textContent=`exp=${new Date(msg.expiresAt).toLocaleString()} • singleUse=${msg.singleUse}`; }
+    if(msg.type==="new-e2e"){
+      try{
+        const plain=await decryptWithRoomKey(currentKey,msg.payload.data);
+        const envelope=JSON.parse(plain);
+        if(envelope.kind==="text"){ document.getElementById("txt").value=envelope.text||""; showToast('Texto recibido','success'); }
+        if(envelope.kind==="file"){
+          const a=document.createElement("a");
+          a.href=`data:${envelope.mime};base64,${envelope.dataBase64}`;
+          a.download=envelope.name||"archivo";
+          a.textContent=`Descargar adjunto: ${envelope.name}`;
+          a.style.display="inline-block"; a.style.marginTop="6px";
+          result.prepend(a); showToast('Archivo recibido','success');
+        }
+      }catch{ document.getElementById("txt").value="(No se pudo descifrar el contenido con esta clave)"; showToast('No se pudo descifrar','error'); }
+    }
+  };
+}
+
+/* ====== QR con logo centrado (favicon) ====== */
+function drawQRWithLogo(container, url){
+  container.innerHTML="";
+  const size=240;
+  const canvas = window.QRMini.draw(size, url); // QR básico nivel L (para texto corto con logo pequeño va bien)
+  const ctx = canvas.getContext("2d");
+  // recuadro blanco (no toca patrones esquineros si lo hacemos pequeño)
+  const badgeSize = Math.floor(size*0.22); // ~22% del lado
+  const x = (size-badgeSize)/2, y=(size-badgeSize)/2;
+  ctx.fillStyle="#fff"; ctx.strokeStyle="#fff";
+  const r=8;
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+badgeSize,y, x+badgeSize,y+badgeSize, r);
+  ctx.arcTo(x+badgeSize,y+badgeSize, x,y+badgeSize, r);
+  ctx.arcTo(x,y+badgeSize, x,y, r); ctx.arcTo(x,y, x+badgeSize,y, r); ctx.closePath();
+  ctx.fill();
+
+  const img=new Image(); img.onload=()=>{ ctx.drawImage(img, x+6, y+6, badgeSize-12, badgeSize-12); };
+  img.src="favicon.ico";
+  container.appendChild(canvas);
+}
+
+/* ====== Acciones ====== */
+function renderShare(joinUrl){
+  result.innerHTML="";
+  const wrap=document.createElement('div'); wrap.className='qr-wrap';
+  drawQRWithLogo(wrap, joinUrl);
+  result.appendChild(wrap);
+
+  const tools=document.createElement('div'); tools.className='row'; tools.style.gap='6px'; tools.style.flexWrap='wrap';
+  tools.innerHTML=`<a href="${joinUrl}" target="_blank">${joinUrl}</a>
+    <button id="copyurl" class="btn btn-chip"><i class="fa-solid fa-link"></i> Copiar URL</button>
+    <button id="copykey" class="btn btn-chip"><i class="fa-solid fa-key"></i> Copiar clave</button>
+    <button id="openjoin" class="btn btn-chip"><i class="fa-solid fa-up-right-from-square"></i> Abrir join</button>
+    <a class="btn btn-wa" target="_blank" href="https://wa.me/?text=${encodeURIComponent(joinUrl)}"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+    <small class="help">Expira: ${new Date(expiresAt).toLocaleString()}</small>`;
+  result.appendChild(tools);
+  document.getElementById("copyurl").onclick=()=>{ navigator.clipboard.writeText(joinUrl); showToast('URL copiada','success'); };
+  document.getElementById("copykey").onclick=()=>{ navigator.clipboard.writeText(currentKey); showToast('Clave copiada','success'); };
+  document.getElementById("openjoin").onclick=()=>window.open(joinUrl,"_blank");
+}
+
+async function createSession(){
+  const text=document.getElementById("txt").value.trim();
+  if(!text){ showToast('Pega el texto primero','error'); return; }
+  const ck=(document.getElementById("customKey").value||"").toUpperCase().trim();
+  const customKey=/^[A-Z0-9]{6}$/.test(ck)?ck:undefined;
+  const ttl=parseInt(document.getElementById("ttl")?.value||900,10);
+  const r=await fetch("/api/create",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({singleUse,ttlSeconds:ttl,customKey})});
+  if(r.status===409){ showToast('Esa clave ya está en uso','error'); return; }
+  const data=await r.json(); if(!data.ok){ showToast('No se pudo crear la sesión','error'); return; }
+  currentKey=data.key; expiresAt=data.expiresAt; lastJoinUrl=data.joinUrl;
+  renderShare(lastJoinUrl);
+  saveHistory(currentKey,lastJoinUrl);
+  connectWS(currentKey, async ()=>{
+    const envelope=JSON.stringify({kind:"text",text});
+    const encrypted=await encryptWithRoomKey(currentKey,envelope);
+    const file_limit_kb=Number(document.getElementById("fileLimit")?.value||150);
+    ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:encrypted},file_limit_kb}));
+    showToast('Enviado','success');
+  });
+}
+
+function updateSend(){
+  if(!ws||ws.readyState!==1){ showToast('No hay sesión activa','error'); return; }
+  const text=document.getElementById("txt").value.trim();
+  if(!text){ showToast('Nada que enviar','error'); return; }
+  (async ()=>{
+    const envelope=JSON.stringify({kind:"text",text});
+    const encrypted=await encryptWithRoomKey(currentKey,envelope);
+    const file_limit_kb=Number(document.getElementById("fileLimit")?.value||150);
+    ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:encrypted},file_limit_kb}));
+    showToast('Actualizado','success');
+  })();
+}
+
+function logout(){ try{ws&&ws.close();}catch{}; ws=null; currentKey=null; lastJoinUrl=null; setStatus(false); sessionInfo.textContent="—"; showToast('Cerraste la sesión'); }
+async function joinFromMain(){ const code=(document.getElementById("joinCode").value||"").trim().toUpperCase(); if(!code){ showToast('Ingresa un código','error'); return; } currentKey=code; connectWS(code); }
+
+/* Envío de archivo (en Avanzadas) */
+document.getElementById("btnSendFile").onclick=async ()=>{
+  if(!ws||ws.readyState!==1){ showToast('No hay sesión activa','error'); return; }
+  const fi=document.getElementById("fileInput");
+  if(!fi.files||!fi.files.length){ showToast('Selecciona un archivo','error'); return; }
+  const f=fi.files[0];
+  const limitKB=Number(document.getElementById("fileLimit").value||150);
+  if(f.size>limitKB*1024){ showToast('Archivo excede el límite','error'); return; }
+  const arr=new Uint8Array(await f.arrayBuffer());
+  const b64=btoa(String.fromCharCode(...arr));
+  const envelope=JSON.stringify({kind:"file",name:f.name,mime:(f.type||"text/plain"),dataBase64:b64});
+  const encrypted=await encryptWithRoomKey(currentKey,envelope);
+  ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"file",data:encrypted},file_limit_kb:limitKB}));
+  showToast('Archivo enviado','success');
+};
+
+/* Botones */
+document.getElementById("btnCreate").onclick=createSession;
+document.getElementById("btnUpdate").onclick=updateSend;
+document.getElementById("btnCopy").onclick=()=>{ navigator.clipboard.writeText(document.getElementById("txt").value); showToast('Texto copiado','success'); };
+document.getElementById("btnLogout").onclick=logout;
+document.getElementById("btnJoinFromMain").onclick=joinFromMain;
+
+/* Single-use por defecto (puedes desactivar en Avanzadas) */
+document.getElementById('singleUse').addEventListener('change',e=>{ singleUse = !!e.target.checked; });
+
+/* Auto-join si viene ?key= */
+const qp=new URLSearchParams(location.search);
+if(qp.get("key")){ currentKey=qp.get("key").toUpperCase(); document.getElementById("joinCode").value=currentKey; connectWS(currentKey); }
+
+/* Init */
+loadHistory(); applyTheme(themeSel.value);
+</script>
+</body>
+</html>
