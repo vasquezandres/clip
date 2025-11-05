@@ -3,30 +3,31 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOLUTECH CLIP — v3.4.4</title>
+<title>SOLUTECH CLIP — v3.4.3</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
 </head>
 <body>
-<!-- ╭──────────────────────────────── HEADER ────────────────────────────────╮ -->
+<!-- ───── HEADER ───── -->
 <div class="header">
   <div class="brand">
     <div class="logo">S</div>
-    <h1>SOLUTECH CLIP — v3.4.4</h1>
+    <h1>SOLUTECH CLIP — v3.4.3</h1>
   </div>
   <div class="controls">
-    <!-- Botón único para cambiar tema -->
-    <button id="themeToggle" class="btn btn-chip" title="Cambiar tema">
-      <i class="fa-solid fa-moon"></i>
-    </button>
+    <select id="themeSel" title="Tema" class="input-pill">
+      <option value="system">Sistema</option>
+      <option value="light" selected>Claro</option>
+      <option value="dark">Oscuro</option>
+      <option value="blue">Solutech Azul</option>
+    </select>
   </div>
 </div>
-<!-- ╰──────────────────────────────── HEADER ────────────────────────────────╯ -->
 
 <div class="container">
   <div class="grid">
-    <!-- ╭────────────────────────── PANEL PRINCIPAL ─────────────────────────╮ -->
+    <!-- ───── PANEL PRINCIPAL ───── -->
     <div class="card" id="card-main">
       <div class="row" style="justify-content:space-between;margin-bottom:8px">
         <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
@@ -51,7 +52,7 @@
         <button id="btnCopy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
       </div>
 
-      <!-- Opciones avanzadas -->
+      <!-- ───── OPCIONES AVANZADAS (colapsadas) ───── -->
       <details class="disclosure" style="margin-top:10px">
         <summary><i class="fa-solid fa-sliders"></i> Opciones avanzadas</summary>
         <div class="content">
@@ -83,9 +84,8 @@
       <hr class="sep">
       <div id="result" style="margin-top:6px"></div>
     </div>
-    <!-- ╰────────────────────────── PANEL PRINCIPAL ─────────────────────────╯ -->
 
-    <!-- ╭────────────────────────── PANEL LATERAL ───────────────────────────╮ -->
+    <!-- ───── PANEL LATERAL ───── -->
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <strong>Sesiones recientes</strong>
@@ -96,7 +96,6 @@
       <div><strong>Datos de la sesión</strong></div>
       <div id="sessionInfo" style="font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted);font-size:12px;margin-top:6px">—</div>
     </div>
-    <!-- ╰────────────────────────── PANEL LATERAL ───────────────────────────╯ -->
   </div>
 
   <div class="footer">
@@ -109,29 +108,12 @@
 <button class="fab" id="fabCreate" title="Crear sesión"><i class="fa-solid fa-plus"></i></button>
 
 <script>
-/* ========= Tema claro/oscuro (botón simple, persistente) ========= */
-const root=document.documentElement;
-const themeBtn=document.getElementById('themeToggle');
-function applyTheme(mode){
-  // 'light' | 'dark'
-  root.className='';
-  if(mode==='light') root.classList.add('light');
-  localStorage.setItem('clip_theme_index',''+mode);
-  themeBtn.innerHTML = mode==='light'
-    ? '<i class="fa-solid fa-moon"></i>'  // estás en claro → muestra luna (sugiere oscuro)
-    : '<i class="fa-solid fa-sun"></i>';  // estás en oscuro → muestra sol (sugiere claro)
-  themeBtn.title = mode==='light' ? 'Cambiar a oscuro' : 'Cambiar a claro';
-}
-(function initTheme(){
-  const saved=localStorage.getItem('clip_theme_index');
-  applyTheme(saved||'light');
-})();
-themeBtn.addEventListener('click',()=>{
-  const cur=localStorage.getItem('clip_theme_index')||'light';
-  applyTheme(cur==='light'?'dark':'light');
-});
+/* ===== Tema ===== */
+const root=document.documentElement, themeSel=document.getElementById('themeSel');
+function applyTheme(v){ root.className=''; if(v==='light') root.classList.add('light'); else if(v==='blue') root.classList.add('blue'); }
+themeSel.addEventListener('change',()=>applyTheme(themeSel.value));
 
-/* ========= Toast ========= */
+/* ===== Toast ===== */
 const toasts=document.getElementById('toasts');
 function showToast(msg,kind='info',timeout=2200){
   const d=document.createElement('div');
@@ -140,7 +122,7 @@ function showToast(msg,kind='info',timeout=2200){
   toasts.appendChild(d); setTimeout(()=>d.remove(),timeout);
 }
 
-/* ========= Estado / Historial ========= */
+/* ===== Estado / Historial ===== */
 const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), result=document.getElementById("result"), sessionInfo=document.getElementById("sessionInfo"), historyBox=document.getElementById("history");
 let ws=null, currentKey=null, expiresAt=0, lastJoinUrl=null;
 
@@ -150,7 +132,7 @@ function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history"
 function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
 document.getElementById('btnClearHist').onclick=()=>{localStorage.removeItem('clip_history');loadHistory();showToast('Historial borrado','success');};
 
-/* ========= QR (simple, sin overlay) ========= */
+/* ===== QR simple (sin overlay) ===== */
 function qrFor(joinUrl){return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&ecc=H&format=svg&margin=2&data=${encodeURIComponent(joinUrl)}`;}
 function renderQR(joinUrl){
   const wrap=document.createElement('div'); wrap.className='qr-wrap';
@@ -159,11 +141,12 @@ function renderQR(joinUrl){
   return wrap;
 }
 
-/* ========= WS & E2E ========= */
+/* ===== WS & E2E ===== */
 function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
 function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));} 
 function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
 async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
+
 async function encryptWithRoomKey(roomKey,plain){
   const enc=new TextEncoder();
   const keyMat=await deriveKeyFromRoom(roomKey);
@@ -208,7 +191,7 @@ function connectWS(key,onOpenSend){
   };
 }
 
-/* ========= Acciones ========= */
+/* ===== Acciones ===== */
 async function createSession(){
   const text=document.getElementById("txt").value.trim();
   if(!text){ showToast('Pega el texto primero','error'); return; }
@@ -280,7 +263,6 @@ function sendFile(){
 
 function logout(){ try{ws&&ws.close();}catch{}; ws=null; currentKey=null; lastJoinUrl=null; setStatus(false); sessionInfo.textContent="—"; showToast('Cerraste la sesión'); }
 function joinFromMain(){ const code=(document.getElementById("joinCode").value||"").trim().toUpperCase(); if(!code){ showToast('Ingresa un código','error'); return; } currentKey=code; connectWS(code); }
-
 document.getElementById("btnCreate").onclick=createSession;
 document.getElementById("btnUpdate").onclick=updateSend;
 document.getElementById("btnCopy").onclick=()=>navigator.clipboard.writeText(document.getElementById("txt").value).then(()=>showToast('Texto copiado','success'));
@@ -294,7 +276,7 @@ const qp=new URLSearchParams(location.search);
 if(qp.get("key")){ currentKey=qp.get("key").toUpperCase(); document.getElementById("joinCode").value=currentKey; connectWS(currentKey); }
 
 /* Init */
-loadHistory();
+loadHistory(); applyTheme(themeSel.value);
 </script>
 </body>
 </html>
