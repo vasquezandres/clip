@@ -12,71 +12,43 @@
 
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,Roboto,Arial}
-a{color:inherit; text-decoration:none}
-
+a{color:inherit}
 .header{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:16px 14px}
 .brand{display:flex;align-items:center;gap:12px}
 .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
 h1{margin:0;font-size:20px;letter-spacing:.2px}
 .controls{display:flex;gap:8px;align-items:center}
-
-select, input[type="text"], input[type="number"]{
-  padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink)
-}
-/* ✔️ inputs del mismo alto y estilo “píldora” */
-.input-pill{ border-radius:999px; height:42px }
-.field{ min-width:200px }
-
+select, input[type="text"], input[type="password"], input[type="number"]{padding:10px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink)}
 .container{max-width:980px;margin:0 auto;padding:12px}
 .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
 @media (max-width:900px){ .grid{grid-template-columns:1fr} }
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.28);padding:14px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 label{font-weight:600}
-
-textarea{
-  width:100%;min-height:160px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;
-  font-family:ui-monospace,Menlo,Consolas,monospace;background:transparent;color:var(--ink)
-}
-
-.btn{appearance:none;border:0;outline:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;
-     display:inline-flex;gap:8px;align-items:center;transition:transform .08s ease, box-shadow .2s ease}
-.btn:hover{transform:translateY(-1px)}
-.btn:active{transform:translateY(0)}
+textarea{width:100%;min-height:160px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-family:ui-monospace,Menlo,Consolas,monospace;background:transparent;color:var(--ink)}
+.btn{appearance:none;border:0;outline:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:transform .08s ease, box-shadow .2s ease}
+.btn:active{transform:translateY(1px)}
 .btn-red{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 8px 20px rgba(255,100,70,.35)}
 .btn-red:hover{box-shadow:0 10px 26px rgba(255,100,70,.50)}
 .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
 .btn-chip{background:var(--chip);border:1px solid var(--line)}
-.btn-wa{background:#25d366;color:#fff;border:0;border-radius:12px;padding:10px 14px;display:inline-flex;gap:8px;align-items:center}
-
 small.help{color:var(--muted)}
 hr.sep{border:none;border-top:1px dashed var(--line);margin:14px 0}
-
 .status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-weight:600;color:var(--muted)}
 .dot{width:10px;height:10px;border-radius:50%}
-
-/* ✔️ QR simple (sin logo sobrepuesto) */
 .qr-wrap{position:relative;width:240px;height:240px;margin:8px 0}
 .qr-wrap img{width:100%;height:100%;border:1px solid var(--line);border-radius:12px;background:#fff}
-
+.qr-badge{position:absolute;right:6px;bottom:6px;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;border:3px solid #fff;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .footer{color:var(--muted);text-align:center;font-size:12px;margin:18px 0}
 .history{display:flex;flex-wrap:wrap;gap:8px}
 .history .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);cursor:pointer}
-
 .filebox{border:1px dashed var(--line);padding:10px;border-radius:12px;text-align:center}
 .filebox input{display:none}
 .filebox label{cursor:pointer}
-
 .fab{position:fixed;right:18px;bottom:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:0;border-radius:999px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(0,0,0,.35);cursor:pointer}
-
 .toast-wrap{position:fixed;right:16px;bottom:86px;display:flex;flex-direction:column;gap:8px;z-index:1000}
 .toast{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;gap:8px;min-width:220px;animation:fadein .2s ease}
 .toast.success{border-color:#12b886}
 .toast.error{border-color:#ef4444}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 ::placeholder{ color: var(--muted); opacity:.9 }
-
-/* ✔️ Disclosure “Opciones avanzadas” */
-.disclosure summary{cursor:pointer;padding:10px 12px;border:1px solid var(--line);border-radius:12px}
-.disclosure[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
-.disclosure .content{border:1px solid var(--line);border-top:0;border-bottom-left-radius:12px;border-bottom-right-radius:12px;padding:12px}
