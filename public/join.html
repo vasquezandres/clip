@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Unirse — SOLUTECH CLIP v3.5.2</title>
+<title>Unirse — SOLUTECH CLIP v3.4.2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
+<style>.container{max-width:980px;margin:20px auto;padding:12px}textarea{min-height:180px}</style>
 </head>
 <body>
 <div class="header">
   <div class="brand">
-    <div class="logo"><img src="favicon.ico" alt="S"></div>
+    <div class="logo">S</div>
     <h1>Unirse — SOLUTECH CLIP</h1>
   </div>
 </div>
@@ -21,9 +22,9 @@
     <div class="row" style="justify-content:space-between;margin-bottom:8px">
       <div class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Desconectado</span></div>
       <div class="row">
-        <input id="key" class="input-strong field" placeholder="Código de sala (ABC123)" maxlength="6">
-        <button id="btnJoin" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
-        <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+        <input id="key" placeholder="Código de sala (ABC123)" style="width:200px" maxlength="6">
+        <button id="btnJoin" class="btn btn-red"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
+        <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
       </div>
     </div>
 
@@ -32,7 +33,7 @@
 
     <div class="row" style="margin-top:10px">
       <button id="copy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
-      <button id="sendBack" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+      <button id="sendBack" class="btn btn-red"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
       <button id="markRead" class="btn btn-ghost" style="display:none"><i class="fa-solid fa-check-double"></i> Marcar leído</button>
     </div>
   </div>
@@ -43,15 +44,17 @@
 <script>
 const toasts=document.getElementById('toasts');
 function showToast(m,k='info',t=2200){const d=document.createElement('div');d.className='toast '+(k==='success'?'success':k==='error'?'error':'');d.innerHTML=`<i class="fa-solid ${k==='success'?'fa-circle-check':k==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${m}`;toasts.appendChild(d);setTimeout(()=>d.remove(),t);}
-let ws=null, currentKey=null; const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
 
-function setStatus(ok){dot.style.background=ok?"var(--ok)":"#aaa";stxt.textContent=ok?"Conectado":"Desconectado";}
+let ws=null, currentKey=null; const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
+function setStatus(ok){dot.style.background=ok?"#12b886":"#aaa";stxt.textContent=ok?"Conectado":"Desconectado";}
 function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
+
 function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));} 
 function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
 async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
 async function encryptWithRoomKey(roomKey,plain){
-  const enc=new TextEncoder();const keyMat=await deriveKeyFromRoom(roomKey);
+  const enc=new TextEncoder();
+  const keyMat=await deriveKeyFromRoom(roomKey);
   const salt=crypto.getRandomValues(new Uint8Array(16));
   const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["encrypt"]);
   const iv=crypto.getRandomValues(new Uint8Array(12));
@@ -84,7 +87,8 @@ function connect(key){
           a.download=envelope.name||'archivo';
           a.textContent=`Descargar adjunto: ${envelope.name}`;
           a.style.display='inline-block'; a.style.marginTop='6px';
-          document.querySelector('.card').appendChild(a); showToast('Archivo recibido','success');
+          document.querySelector('.card').appendChild(a);
+          showToast('Archivo recibido','success');
         }
       }catch{ document.getElementById('txt').value='(No se pudo descifrar el contenido con esta clave)'; showToast('No se pudo descifrar','error'); }
     }
@@ -93,10 +97,21 @@ function connect(key){
 
 const qp=new URLSearchParams(location.search);
 if(qp.get('key')){ currentKey=qp.get('key').toUpperCase(); document.getElementById('key').value=currentKey; connect(currentKey); }
-document.getElementById('btnJoin').onclick=()=>{ const k=(document.getElementById('key').value||'').trim().toUpperCase(); if(!k){showToast('Introduce la clave','error');return;} currentKey=k; connect(k); };
+
+document.getElementById('btnJoin').onclick=()=>{
+  const k=(document.getElementById('key').value||'').trim().toUpperCase();
+  if(!k){showToast('Introduce la clave','error');return;}
+  currentKey=k; connect(k);
+};
 document.getElementById('btnLogout').onclick=()=>{try{ws&&ws.close();}catch{}};
 document.getElementById('copy').onclick=async ()=>{const t=document.getElementById('txt').value||'';await navigator.clipboard.writeText(t);showToast('Copiado','success');};
-document.getElementById('sendBack').onclick=async ()=>{ if(!ws||ws.readyState!==1){showToast('No hay conexión','error');return;} const env=JSON.stringify({kind:'text',text:document.getElementById('txt').value}); const enc=await encryptWithRoomKey(currentKey,env); ws.send(JSON.stringify({type:'send-e2e',payload:{kind:'text',data:enc}})); showToast('Enviado','success'); };
+document.getElementById('sendBack').onclick=async ()=>{
+  if(!ws||ws.readyState!==1){showToast('No hay conexión','error');return;}
+  const env=JSON.stringify({kind:'text',text:document.getElementById('txt').value});
+  const enc=await encryptWithRoomKey(currentKey,env);
+  ws.send(JSON.stringify({type:'send-e2e',payload:{kind:'text',data:enc}}));
+  showToast('Enviado','success');
+};
 document.getElementById('markRead').onclick=()=>{ if(!ws)return; ws.send(JSON.stringify({type:'read'})); };
 </script>
 </body>

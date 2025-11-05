@@ -3,24 +3,22 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOLUTECH CLIP — v3.5.2</title>
+<title>SOLUTECH CLIP — v3.4.2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
-<!-- QR con ECC H -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
 <div class="header">
   <div class="brand">
-    <div class="logo"><img src="favicon.ico" alt="S"></div>
-    <h1>SOLUTECH CLIP — v3.5.2</h1>
+    <div class="logo">S</div>
+    <h1>SOLUTECH CLIP — v3.4.2</h1>
   </div>
   <div class="controls">
     <select id="themeSel" title="Tema">
       <option value="system">Sistema</option>
-      <option value="light" selected>Claro</option>
-      <option value="dark">Oscuro</option>
+      <option value="light">Claro</option>
+      <option value="dark" selected>Oscuro</option>
       <option value="blue">Solutech Azul</option>
     </select>
   </div>
@@ -32,50 +30,52 @@
       <div class="row" style="justify-content:space-between;margin-bottom:8px">
         <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
         <div class="row">
-          <input id="joinCode" class="input-strong field" placeholder="Código de sala (ABC123)" maxlength="6">
+          <input id="joinCode" placeholder="Ingresar código de sala" style="width:180px" maxlength="6">
           <button id="btnJoinFromMain" class="btn btn-ghost"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
-          <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+          <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
         </div>
       </div>
 
       <label>Texto</label>
       <textarea id="txt" placeholder="Pega aquí…"></textarea>
 
-      <div class="row" style="margin-top:10px">
-        <input id="customKey" class="input-strong field" placeholder="Clave manual (opcional, ej. ABC123)" maxlength="6">
-        <button id="btnCreate" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Crear & Enviar</button>
-        <button id="btnUpdate" class="btn btn-ghost" disabled><i class="fa-solid fa-rotate-right"></i> Reenviar</button>
-        <button id="btnCopy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
+      <div class="row" style="gap:8px; flex-wrap:wrap; margin:8px 0">
+        <input id="customKey" placeholder="Clave manual (opcional, ej. ABC123)" style="width:260px" maxlength="6">
+        <small class="help">Si la dejas vacía, se genera automáticamente.</small>
       </div>
 
-      <details class="disclosure" id="adv">
-        <summary><i class="fa-solid fa-sliders"></i> Opciones avanzadas</summary>
-        <div class="content">
-          <div class="row">
-            <label><input type="checkbox" id="singleUse" checked> Single-use (se destruye al leer)</label>
-            <label>Expira
-              <select id="ttl" title="Expiración">
-                <option value="300">5 min</option>
-                <option value="900" selected>15 min</option>
-                <option value="1800">30 min</option>
-                <option value="3600">1 hora</option>
-              </select>
-            </label>
-          </div>
-          <hr class="sep">
-          <div class="row">
-            <div class="filebox" style="flex:1">
-              <input type="file" id="fileInput" accept=".txt,.json">
-              <label for="fileInput"><i class="fa-solid fa-paperclip"></i> Adjuntar (.txt/.json)</label>
-            </div>
-            <label>Límite adjunto (KB): <input id="fileLimit" class="input-strong" type="number" min="10" max="200" value="150" style="width:90px"></label>
-            <button id="btnSendFile" class="btn btn-ghost"><i class="fa-solid fa-file-arrow-up"></i> Enviar archivo</button>
-          </div>
+      <div class="row" style="margin-top:8px">
+        <label><input type="checkbox" id="singleUse"> Single-use</label>
+        <select id="ttl" title="Expiración">
+          <option value="300">5 min</option>
+          <option value="900" selected>15 min</option>
+          <option value="1800">30 min</option>
+          <option value="3600">1 hora</option>
+        </select>
+        <div class="row" style="margin-left:auto;gap:8px">
+          <label>Límite adjunto (KB): <input id="fileLimit" type="number" min="10" max="200" value="150" style="width:90px"></label>
+          <small class="help">El servidor aplica tope</small>
         </div>
-      </details>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button id="btnCreate" class="btn btn-red"><i class="fa-solid fa-paper-plane"></i> Crear nueva sesión</button>
+        <button id="btnUpdate" class="btn btn-ghost" disabled><i class="fa-solid fa-rotate-right"></i> Actualizar</button>
+        <button id="btnDuplicate" class="btn btn-ghost" disabled><i class="fa-solid fa-clone"></i> Duplicar</button>
+        <button id="btnCopy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar texto</button>
+      </div>
 
       <hr class="sep">
-      <div id="result"></div>
+
+      <div class="row">
+        <div class="filebox" style="flex:1">
+          <input type="file" id="fileInput" accept=".txt,.json">
+          <label for="fileInput"><i class="fa-solid fa-paperclip"></i> Adjuntar (.txt/.json)</label>
+        </div>
+        <button id="btnSendFile" class="btn btn-ghost"><i class="fa-solid fa-file-arrow-up"></i> Enviar archivo</button>
+      </div>
+
+      <div id="result" style="margin-top:12px"></div>
     </div>
 
     <div class="card">
@@ -91,22 +91,24 @@
   </div>
 
   <div class="footer">
-    © 2025 Solutech Panamá — Cloudflare Workers + Durable Objects •
-    <a href="https://www.solutechpanama.com" target="_blank">Web</a> •
-    <a href="https://wa.me/50768886778" target="_blank">WhatsApp Soporte</a>
+    <div style="margin:6px 0">© 2025 Solutech Panamá — Hecho con Cloudflare Workers + Durable Objects</div>
+    <div>Soluciones reales a problemas tecnológicos • <a href="https://www.solutechpanama.com" target="_blank">Solutech Panamá</a> • <a href="https://wa.me/50768886778" target="_blank">WhatsApp Soporte</a></div>
   </div>
 </div>
 
 <div class="toast-wrap" id="toasts"></div>
+<button class="fab" id="fabCreate" title="Crear sesión"><i class="fa-solid fa-plus"></i></button>
 
 <script>
-/* ====== Tema ====== */
 const root = document.documentElement;
 const themeSel = document.getElementById('themeSel');
-function applyTheme(val){ root.className=''; if(val==='light') root.classList.add('light'); else if(val==='blue') root.classList.add('blue'); }
+function applyTheme(val){
+  root.className='';
+  if(val==='light') root.classList.add('light');
+  else if(val==='blue') root.classList.add('blue');
+}
 themeSel.addEventListener('change', ()=> applyTheme(themeSel.value));
 
-/* ====== Utilidades ====== */
 const toasts=document.getElementById('toasts');
 function showToast(msg, kind='info', timeout=2200){
   const d=document.createElement('div');
@@ -114,15 +116,25 @@ function showToast(msg, kind='info', timeout=2200){
   d.innerHTML=`<i class="fa-solid ${kind==='success'?'fa-circle-check':kind==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${msg}`;
   toasts.appendChild(d); setTimeout(()=>d.remove(), timeout);
 }
+
 const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), result=document.getElementById("result"), sessionInfo=document.getElementById("sessionInfo"), historyBox=document.getElementById("history");
-let ws=null, currentKey=null, expiresAt=0, singleUse=true, lastJoinUrl=null;
+let ws=null, currentKey=null, expiresAt=0, singleUse=false, lastJoinUrl=null;
 
 function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");historyBox.innerHTML="";list.slice(0,8).forEach(it=>{const chip=document.createElement("div");chip.className="chip";chip.textContent=`${it.key} · ${new Date(it.when).toLocaleString()}`;chip.onclick=()=>window.open(it.joinUrl,"_blank");historyBox.appendChild(chip);});}
 function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
 document.getElementById('btnClearHist').onclick=()=>{localStorage.removeItem('clip_history');loadHistory();showToast('Historial borrado','success');};
-function setStatus(ok){dot.style.background=ok?"var(--ok)":"#aaa";stxt.textContent=ok?`Conectado — ${currentKey}`:"Sin sesión";document.getElementById("btnUpdate").disabled=!ok;document.getElementById("btnLogout").disabled=!ok;}
+function setStatus(ok){dot.style.background=ok?"#12b886":"#aaa";stxt.textContent=ok?`Conectado — ${currentKey}`:"Sin sesión";document.getElementById("btnUpdate").disabled=!ok;document.getElementById("btnDuplicate").disabled=!ok;document.getElementById("btnLogout").disabled=!ok;}
 
-/* ====== Cripto ====== */
+function qrFor(joinUrl){return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&ecc=H&format=svg&margin=2&data=${encodeURIComponent(joinUrl)}`;}
+function renderQR(joinUrl){
+  const wrap=document.createElement('div'); wrap.className='qr-wrap';
+  const img=document.createElement('img'); img.src = qrFor(joinUrl); wrap.appendChild(img);
+  const badge=document.createElement('div'); badge.className='qr-badge'; badge.textContent = 'S';
+  wrap.appendChild(badge); // esquina -> no tapa el centro del QR
+  return wrap;
+}
+
+function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
 function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
 function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
 async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
@@ -142,8 +154,6 @@ async function decryptWithRoomKey(roomKey,payload){
   return new TextDecoder().decode(pt);
 }
 
-/* ====== WebSocket ====== */
-function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
 function connectWS(key,onOpenSend){
   if(ws) try{ ws.close(); }catch{}
   ws=new WebSocket(wsUrlFor(key));
@@ -158,93 +168,57 @@ function connectWS(key,onOpenSend){
       try{
         const plain=await decryptWithRoomKey(currentKey,msg.payload.data);
         const envelope=JSON.parse(plain);
-        if(envelope.kind==="text"){ document.getElementById("txt").value=envelope.text||""; showToast('Texto recibido','success'); }
-        if(envelope.kind==="file"){
+        if(envelope.kind==="text"){
+          document.getElementById("txt").value=envelope.text||"";
+          showToast('Texto recibido','success');
+        }else if(envelope.kind==="file"){
           const a=document.createElement("a");
           a.href=`data:${envelope.mime};base64,${envelope.dataBase64}`;
           a.download=envelope.name||"archivo";
-          a.textContent=`Descargar adjunto: ${envelope.name}`;
+          a.textContent=`Descargar adjunto: ${envelope.name} (${envelope.mime})`;
           a.style.display="inline-block"; a.style.marginTop="6px";
-          result.prepend(a); showToast('Archivo recibido','success');
+          result.prepend(a);
+          showToast('Archivo recibido','success');
         }
-      }catch{ document.getElementById("txt").value="(No se pudo descifrar el contenido con esta clave)"; showToast('No se pudo descifrar','error'); }
+      }catch{
+        document.getElementById("txt").value="(No se pudo descifrar el contenido con esta clave)";
+        showToast('No se pudo descifrar','error');
+      }
     }
   };
 }
 
-/* ====== QR con ECC H + logo centrado ====== */
-async function renderQRWithLogo(container, url){
-  container.innerHTML = "";
-  const size = 280;
-  const canvas = document.createElement("canvas");
-  canvas.width = size; canvas.height = size;
-  container.appendChild(canvas);
-
-  await QRCode.toCanvas(canvas, url, {
-    errorCorrectionLevel: 'H',
-    margin: 1,
-    width: size,
-    color: { dark: '#000000', light: '#ffffff' }
-  });
-
-  const ctx = canvas.getContext("2d");
-  const logo = new Image();
-  const badge = Math.floor(size * 0.18);
-  const x = (size - badge) / 2, y = (size - badge) / 2;
-
-  const r = Math.max(6, Math.floor(badge * 0.18));
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+badge, y, x+badge, y+badge, r);
-  ctx.arcTo(x+badge, y+badge, x, y+badge, r);
-  ctx.arcTo(x, y+badge, x, y, r);
-  ctx.arcTo(x, y, x+badge, y, r);
-  ctx.closePath();
-  ctx.fill();
-
-  logo.onload = ()=> ctx.drawImage(logo, x+6, y+6, badge-12, badge-12);
-  logo.src = 'favicon.ico';
-}
-
-function renderShare(joinUrl){
-  result.innerHTML="";
-  const wrap=document.createElement('div'); wrap.className='qr-wrap';
-  renderQRWithLogo(wrap, joinUrl);
-  result.appendChild(wrap);
-
-  const tools=document.createElement('div'); tools.className='row'; tools.style.gap='6px'; tools.style.flexWrap='wrap';
-  tools.innerHTML=`<a href="${joinUrl}" target="_blank">${joinUrl}</a>
-    <button id="copyurl" class="btn btn-chip"><i class="fa-solid fa-link"></i> Copiar URL</button>
-    <button id="copykey" class="btn btn-chip"><i class="fa-solid fa-key"></i> Copiar clave</button>
-    <button id="openjoin" class="btn btn-chip"><i class="fa-solid fa-up-right-from-square"></i> Abrir join</button>
-    <a id="btnWA" class="btn btn-wa" target="_blank" href="https://wa.me/?text=${encodeURIComponent(joinUrl)}">
-      <i class="fa-brands fa-whatsapp"></i> WhatsApp
-    </a>
-    <small class="help">Expira: ${new Date(expiresAt).toLocaleString()}</small>`;
-  result.appendChild(tools);
-  document.getElementById("copyurl").onclick=()=>{ navigator.clipboard.writeText(joinUrl); showToast('URL copiada','success'); };
-  document.getElementById("copykey").onclick=()=>{ navigator.clipboard.writeText(currentKey); showToast('Clave copiada','success'); };
-  document.getElementById("openjoin").onclick=()=>window.open(joinUrl,"_blank");
-}
-
-/* ====== Acciones ====== */
 async function createSession(){
   const text=document.getElementById("txt").value.trim();
   if(!text){ showToast('Pega el texto primero','error'); return; }
+  singleUse=document.getElementById("singleUse").checked;
+  const ttl=parseInt(document.getElementById("ttl").value,10);
   const ck=(document.getElementById("customKey").value||"").toUpperCase().trim();
   const customKey=/^[A-Z0-9]{6}$/.test(ck)?ck:undefined;
-  const ttl=parseInt(document.getElementById("ttl")?.value||900,10);
+
   const r=await fetch("/api/create",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({singleUse,ttlSeconds:ttl,customKey})});
   if(r.status===409){ showToast('Esa clave ya está en uso','error'); return; }
-  const data=await r.json(); if(!data.ok){ showToast('No se pudo crear la sesión','error'); return; }
+  const data=await r.json();
+  if(!data.ok){ showToast('No se pudo crear la sesión','error'); return; }
   currentKey=data.key; expiresAt=data.expiresAt; lastJoinUrl=data.joinUrl;
-  renderShare(lastJoinUrl);
+
+  result.innerHTML=""; result.appendChild(renderQR(lastJoinUrl));
+  const tool=document.createElement('div'); tool.className='row'; tool.style.gap='6px'; tool.style.flexWrap='wrap';
+  tool.innerHTML=`<a href="${lastJoinUrl}" target="_blank">${lastJoinUrl}</a>
+    <button id="copyurl" class="btn btn-chip"><i class="fa-solid fa-link"></i> Copiar URL</button>
+    <button id="copykey" class="btn btn-chip"><i class="fa-solid fa-key"></i> Copiar clave</button>
+    <button id="openjoin" class="btn btn-chip"><i class="fa-solid fa-up-right-from-square"></i> Abrir join</button>
+    <a class="btn btn-chip" target="_blank" href="https://wa.me/?text=${encodeURIComponent(lastJoinUrl)}"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+    <small class="help">Expira: ${new Date(expiresAt).toLocaleString()}</small>`;
+  result.appendChild(tool);
+  document.getElementById("copyurl").onclick=()=>{ navigator.clipboard.writeText(lastJoinUrl); showToast('URL copiada','success'); };
+  document.getElementById("copykey").onclick=()=>{ navigator.clipboard.writeText(currentKey); showToast('Clave copiada','success'); };
+  document.getElementById("openjoin").onclick=()=>window.open(lastJoinUrl,"_blank");
   saveHistory(currentKey,lastJoinUrl);
   connectWS(currentKey, async ()=>{
     const envelope=JSON.stringify({kind:"text",text});
     const encrypted=await encryptWithRoomKey(currentKey,envelope);
-    const file_limit_kb=Number(document.getElementById("fileLimit")?.value||150);
+    const file_limit_kb=Number(document.getElementById("fileLimit").value||150);
     ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:encrypted},file_limit_kb}));
     showToast('Enviado','success');
   });
@@ -257,16 +231,16 @@ function updateSend(){
   (async ()=>{
     const envelope=JSON.stringify({kind:"text",text});
     const encrypted=await encryptWithRoomKey(currentKey,envelope);
-    const file_limit_kb=Number(document.getElementById("fileLimit")?.value||150);
+    const file_limit_kb=Number(document.getElementById("fileLimit").value||150);
     ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:encrypted},file_limit_kb}));
     showToast('Actualizado','success');
   })();
 }
 
+function duplicateSession(){ if(!currentKey){ showToast('No hay sesión para duplicar','error'); return; } createSession(); }
 function logout(){ try{ws&&ws.close();}catch{}; ws=null; currentKey=null; lastJoinUrl=null; setStatus(false); sessionInfo.textContent="—"; showToast('Cerraste la sesión'); }
 async function joinFromMain(){ const code=(document.getElementById("joinCode").value||"").trim().toUpperCase(); if(!code){ showToast('Ingresa un código','error'); return; } currentKey=code; connectWS(code); }
 
-/* Envío de archivo (en Avanzadas) */
 document.getElementById("btnSendFile").onclick=async ()=>{
   if(!ws||ws.readyState!==1){ showToast('No hay sesión activa','error'); return; }
   const fi=document.getElementById("fileInput");
@@ -282,22 +256,19 @@ document.getElementById("btnSendFile").onclick=async ()=>{
   showToast('Archivo enviado','success');
 };
 
-/* Botones */
 document.getElementById("btnCreate").onclick=createSession;
 document.getElementById("btnUpdate").onclick=updateSend;
+document.getElementById("btnDuplicate").onclick=duplicateSession;
 document.getElementById("btnCopy").onclick=()=>{ navigator.clipboard.writeText(document.getElementById("txt").value); showToast('Texto copiado','success'); };
 document.getElementById("btnLogout").onclick=logout;
 document.getElementById("btnJoinFromMain").onclick=joinFromMain;
+document.getElementById("fabCreate").onclick=()=>{ if(!document.getElementById("txt").value.trim()){ showToast('Pega texto para crear','error'); return; } createSession(); };
 
-/* Single-use por defecto (puedes desactivar en Avanzadas) */
-document.getElementById('singleUse').addEventListener('change',e=>{ singleUse = !!e.target.checked; });
-
-/* Auto-join si viene ?key= */
 const qp=new URLSearchParams(location.search);
 if(qp.get("key")){ currentKey=qp.get("key").toUpperCase(); document.getElementById("joinCode").value=currentKey; connectWS(currentKey); }
 
-/* Init */
-loadHistory(); applyTheme(themeSel.value);
+loadHistory();
+applyTheme(themeSel.value);
 </script>
 </body>
 </html>
