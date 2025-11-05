@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Unirse — SOLUTECH CLIP v3.5</title>
+<title>Unirse — SOLUTECH CLIP v3.5.2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
@@ -21,7 +21,7 @@
     <div class="row" style="justify-content:space-between;margin-bottom:8px">
       <div class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Desconectado</span></div>
       <div class="row">
-        <input id="key" class="input-strong" placeholder="Código de sala (ABC123)" style="width:220px" maxlength="6">
+        <input id="key" class="input-strong field" placeholder="Código de sala (ABC123)" maxlength="6">
         <button id="btnJoin" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
         <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
       </div>
@@ -44,6 +44,7 @@
 const toasts=document.getElementById('toasts');
 function showToast(m,k='info',t=2200){const d=document.createElement('div');d.className='toast '+(k==='success'?'success':k==='error'?'error':'');d.innerHTML=`<i class="fa-solid ${k==='success'?'fa-circle-check':k==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${m}`;toasts.appendChild(d);setTimeout(()=>d.remove(),t);}
 let ws=null, currentKey=null; const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
+
 function setStatus(ok){dot.style.background=ok?"var(--ok)":"#aaa";stxt.textContent=ok?"Conectado":"Desconectado";}
 function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
 function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));} 
@@ -63,6 +64,7 @@ async function decryptWithRoomKey(roomKey,payload){
   const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64toU8(payload.iv)},key,b64toU8(payload.cipher));
   return new TextDecoder().decode(pt);
 }
+
 function connect(key){
   if(ws) try{ws.close();}catch{};
   ws=new WebSocket(wsUrlFor(key));
@@ -88,6 +90,7 @@ function connect(key){
     }
   };
 }
+
 const qp=new URLSearchParams(location.search);
 if(qp.get('key')){ currentKey=qp.get('key').toUpperCase(); document.getElementById('key').value=currentKey; connect(currentKey); }
 document.getElementById('btnJoin').onclick=()=>{ const k=(document.getElementById('key').value||'').trim().toUpperCase(); if(!k){showToast('Introduce la clave','error');return;} currentKey=k; connect(k); };

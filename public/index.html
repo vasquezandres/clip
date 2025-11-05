@@ -3,16 +3,18 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOLUTECH CLIP — v3.5</title>
+<title>SOLUTECH CLIP — v3.5.2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
+<!-- QR con ECC H -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
 <div class="header">
   <div class="brand">
     <div class="logo"><img src="favicon.ico" alt="S"></div>
-    <h1>SOLUTECH CLIP — v3.5</h1>
+    <h1>SOLUTECH CLIP — v3.5.2</h1>
   </div>
   <div class="controls">
     <select id="themeSel" title="Tema">
@@ -30,7 +32,7 @@
       <div class="row" style="justify-content:space-between;margin-bottom:8px">
         <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
         <div class="row">
-          <input id="joinCode" class="input-strong" placeholder="Código de sala (ABC123)" style="width:220px" maxlength="6">
+          <input id="joinCode" class="input-strong field" placeholder="Código de sala (ABC123)" maxlength="6">
           <button id="btnJoinFromMain" class="btn btn-ghost"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
           <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
         </div>
@@ -40,7 +42,7 @@
       <textarea id="txt" placeholder="Pega aquí…"></textarea>
 
       <div class="row" style="margin-top:10px">
-        <input id="customKey" class="input-strong" placeholder="Clave manual (opcional, ej. ABC123)" style="width:260px" maxlength="6">
+        <input id="customKey" class="input-strong field" placeholder="Clave manual (opcional, ej. ABC123)" maxlength="6">
         <button id="btnCreate" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Crear & Enviar</button>
         <button id="btnUpdate" class="btn btn-ghost" disabled><i class="fa-solid fa-rotate-right"></i> Reenviar</button>
         <button id="btnCopy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
@@ -96,12 +98,6 @@
 </div>
 
 <div class="toast-wrap" id="toasts"></div>
-
-<!-- QRCode (ligero) -->
-<script>
-/* qrcode.js mínimo (versión comprimida recortada) */
-!function(o){function t(o){this.mode=c.MODE_8BIT_BYTE,this.data=o,this.parsedData=[];for(var t=0,e=this.data.length;t<e;t++){var r=[],n=this.data.charCodeAt(t);n>65536?(r[0]=240|(1835008&n)>>>18,r[1]=128|(258048&n)>>>12,r[2]=128|(4032&n)>>>6,r[3]=128|63&n):n>2048?(r[0]=224|(61440&n)>>>12,r[1]=128|(4032&n)>>>6,r[2]=128|63&n):n>128?(r[0]=192|(1984&n)>>>6,r[1]=128|63&n):r[0]=n,this.parsedData.push(r)}this.parsedData=Array.prototype.concat.apply([],this.parsedData)}var e=function(){var o=function(o,t){this.totalCount=o,this.dataCount=t};return{getRSBlocks:function(t,e){var r=function(t,e){switch(e){case 1:return n[t];case 0:default:return r=t-1,n[r]}var r},n=[[new o(1,19)],[new o(1,34)],[new o(1,55)],[new o(1,80)]];return r(t,e)}}}(),r={PAD0:236,PAD1:17},n=function(){function o(o){this.buffer=[],this.length=0,o&&this.put(o,8)}return o.prototype.getBuffer=function(){return this.buffer},o.prototype.put=function(o,t){for(var e=0;e<t;e++)this.putBit(1==(o>>>t-e-1&1))},o.prototype.putBit=function(o){var t=this.length>>3;this.buffer.length<=t&&this.buffer.push(0),o&&(this.buffer[t]|=128>>>this.length%8),this.length++},o}(),c={MODE_8BIT_BYTE:4};t.prototype.getLength=function(){return this.parsedData.length},t.prototype.write=function(o){for(var t=0,e=this.parsedData.length;t<e;t++)o.put(this.parsedData[t],8)};function i(o){this.typeNumber=1,this.errorCorrectLevel=1,this.modules=null,this.moduleCount=0,this.dataList=[],o&&this.addData(o)}i.prototype.addData=function(o){this.dataList.push(new t(o))},i.prototype.make=function(){this.moduleCount=21,this.modules=new Array(this.moduleCount);for(var o=0;o<this.moduleCount;o++){this.modules[o]=new Array(this.moduleCount);for(var t=0;t<this.moduleCount;t++)this.modules[o][t]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.mapData(this.createData())},i.prototype.setupPositionProbePattern=function(o,t){for(var e=-1;e<=7;e++)if(!(o+e<=-1||this.moduleCount<=o+e))for(var r=-1;r<=7;r++)t+r<=-1||this.moduleCount<=t+r||(this.modules[o+e][t+r]=e>=0&&e<=6&&(0==r||6==r)||r>=0&&r<=6&&(0==e||6==e)||e>=2&&e<=4&&r>=2&&r<=4)},i.prototype.mapData=function(o){for(var t=-1,e=this.moduleCount-1,r=7,n=0,c=this.moduleCount-1;c>0;c-=2)for(6==c&&c--;;){for(var i=0;i<2;i++)if(null==this.modules[c-i][e]){var s=!1;n<o.length&&(s=1==(o[n]>>>r&1)),this.modules[c-i][e]=s,0==--r&&(n++,r=7)}if((e+=t)<0||this.moduleCount<=e){e-=t,t=-t;break}}},i.prototype.createData=function(){for(var o=new n,t=0;t<this.dataList.length;t++){var c=this.dataList[t];o.put(c.mode,4),o.put(c.getLength(),8),c.write(o)}for(;o.length+4<=8;)o.put(0,4);for(;o.length%8!=0;)o.put(0,1);for(;o.getBuffer().length<e.getRSBlocks(1,0)[0].dataCount;)o.put(r.PAD0,8),o.getBuffer().length<e.getRSBlocks(1,0)[0].dataCount&&o.put(r.PAD1,8);return o.getBuffer()};function s(o,t){var e=new i(o);return e.make(),function(o,t){var e=document.createElement("canvas");e.width=t,e.height=t;for(var r=e.getContext("2d"),n=t/21,c=0;c<21;c++)for(var i=0;i<21;i++)r.fillStyle=o.modules[i][c]?"#000":"#fff",r.fillRect(i*n,c*n,n,n);return e}(e,t)}o.QRMini={draw:function(o,t){return s(t||"",o||240)}}}(window);
-</script>
 
 <script>
 /* ====== Tema ====== */
@@ -176,33 +172,45 @@ function connectWS(key,onOpenSend){
   };
 }
 
-/* ====== QR con logo centrado (favicon) ====== */
-function drawQRWithLogo(container, url){
-  container.innerHTML="";
-  const size=240;
-  const canvas = window.QRMini.draw(size, url); // QR básico nivel L (para texto corto con logo pequeño va bien)
+/* ====== QR con ECC H + logo centrado ====== */
+async function renderQRWithLogo(container, url){
+  container.innerHTML = "";
+  const size = 280;
+  const canvas = document.createElement("canvas");
+  canvas.width = size; canvas.height = size;
+  container.appendChild(canvas);
+
+  await QRCode.toCanvas(canvas, url, {
+    errorCorrectionLevel: 'H',
+    margin: 1,
+    width: size,
+    color: { dark: '#000000', light: '#ffffff' }
+  });
+
   const ctx = canvas.getContext("2d");
-  // recuadro blanco (no toca patrones esquineros si lo hacemos pequeño)
-  const badgeSize = Math.floor(size*0.22); // ~22% del lado
-  const x = (size-badgeSize)/2, y=(size-badgeSize)/2;
-  ctx.fillStyle="#fff"; ctx.strokeStyle="#fff";
-  const r=8;
+  const logo = new Image();
+  const badge = Math.floor(size * 0.18);
+  const x = (size - badge) / 2, y = (size - badge) / 2;
+
+  const r = Math.max(6, Math.floor(badge * 0.18));
+  ctx.fillStyle = '#fff';
   ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.arcTo(x+badgeSize,y, x+badgeSize,y+badgeSize, r);
-  ctx.arcTo(x+badgeSize,y+badgeSize, x,y+badgeSize, r);
-  ctx.arcTo(x,y+badgeSize, x,y, r); ctx.arcTo(x,y, x+badgeSize,y, r); ctx.closePath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+badge, y, x+badge, y+badge, r);
+  ctx.arcTo(x+badge, y+badge, x, y+badge, r);
+  ctx.arcTo(x, y+badge, x, y, r);
+  ctx.arcTo(x, y, x+badge, y, r);
+  ctx.closePath();
   ctx.fill();
 
-  const img=new Image(); img.onload=()=>{ ctx.drawImage(img, x+6, y+6, badgeSize-12, badgeSize-12); };
-  img.src="favicon.ico";
-  container.appendChild(canvas);
+  logo.onload = ()=> ctx.drawImage(logo, x+6, y+6, badge-12, badge-12);
+  logo.src = 'favicon.ico';
 }
 
-/* ====== Acciones ====== */
 function renderShare(joinUrl){
   result.innerHTML="";
   const wrap=document.createElement('div'); wrap.className='qr-wrap';
-  drawQRWithLogo(wrap, joinUrl);
+  renderQRWithLogo(wrap, joinUrl);
   result.appendChild(wrap);
 
   const tools=document.createElement('div'); tools.className='row'; tools.style.gap='6px'; tools.style.flexWrap='wrap';
@@ -210,7 +218,9 @@ function renderShare(joinUrl){
     <button id="copyurl" class="btn btn-chip"><i class="fa-solid fa-link"></i> Copiar URL</button>
     <button id="copykey" class="btn btn-chip"><i class="fa-solid fa-key"></i> Copiar clave</button>
     <button id="openjoin" class="btn btn-chip"><i class="fa-solid fa-up-right-from-square"></i> Abrir join</button>
-    <a class="btn btn-wa" target="_blank" href="https://wa.me/?text=${encodeURIComponent(joinUrl)}"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+    <a id="btnWA" class="btn btn-wa" target="_blank" href="https://wa.me/?text=${encodeURIComponent(joinUrl)}">
+      <i class="fa-brands fa-whatsapp"></i> WhatsApp
+    </a>
     <small class="help">Expira: ${new Date(expiresAt).toLocaleString()}</small>`;
   result.appendChild(tools);
   document.getElementById("copyurl").onclick=()=>{ navigator.clipboard.writeText(joinUrl); showToast('URL copiada','success'); };
@@ -218,6 +228,7 @@ function renderShare(joinUrl){
   document.getElementById("openjoin").onclick=()=>window.open(joinUrl,"_blank");
 }
 
+/* ====== Acciones ====== */
 async function createSession(){
   const text=document.getElementById("txt").value.trim();
   if(!text){ showToast('Pega el texto primero','error'); return; }
