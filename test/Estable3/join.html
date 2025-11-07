@@ -3,17 +3,23 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Unirse — SOLUTECH CLIP v3.4.2</title>
+<title>Unirse — SOLUTECH CLIP v3.4.3</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
 <style>.container{max-width:980px;margin:20px auto;padding:12px}textarea{min-height:180px}</style>
 </head>
 <body>
+<!-- Header con toggle Claro/Oscuro -->
 <div class="header">
   <div class="brand">
     <div class="logo">S</div>
     <h1>Unirse — SOLUTECH CLIP</h1>
+  </div>
+  <div class="controls">
+    <button id="themeToggle" class="btn btn-chip" title="Cambiar tema">
+      <i class="fa-solid fa-moon"></i>
+    </button>
   </div>
 </div>
 
@@ -22,7 +28,7 @@
     <div class="row" style="justify-content:space-between;margin-bottom:8px">
       <div class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Desconectado</span></div>
       <div class="row">
-        <input id="key" placeholder="Código de sala (ABC123)" style="width:200px" maxlength="6">
+        <input id="key" class="input-pill field" placeholder="Código de sala (ABC123)" maxlength="6">
         <button id="btnJoin" class="btn btn-red"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
         <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
       </div>
@@ -33,7 +39,7 @@
 
     <div class="row" style="margin-top:10px">
       <button id="copy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
-      <button id="sendBack" class="btn btn-red"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+      <button id="sendBack" class="btn btn-red" disabled><i class="fa-solid fa-paper-plane"></i> Enviar</button>
       <button id="markRead" class="btn btn-ghost" style="display:none"><i class="fa-solid fa-check-double"></i> Marcar leído</button>
     </div>
   </div>
@@ -42,14 +48,43 @@
 <div class="toast-wrap" id="toasts"></div>
 
 <script>
-const toasts=document.getElementById('toasts');
-function showToast(m,k='info',t=2200){const d=document.createElement('div');d.className='toast '+(k==='success'?'success':k==='error'?'error':'');d.innerHTML=`<i class="fa-solid ${k==='success'?'fa-circle-check':k==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${m}`;toasts.appendChild(d);setTimeout(()=>d.remove(),t);}
+/* ========= Tema claro/oscuro (persistente) ========= */
+const root=document.documentElement;
+const themeBtn=document.getElementById('themeToggle');
+function applyTheme(mode){
+  // modes: 'light' | 'dark'
+  root.className='';
+  if(mode==='light') root.classList.add('light');
+  localStorage.setItem('clip_theme_join', mode);
+  themeBtn.innerHTML = mode==='light'
+    ? '<i class="fa-solid fa-moon"></i>'   // muestra luna (si estás en claro, el botón sugiere cambiar a oscuro)
+    : '<i class="fa-solid fa-sun"></i>';   // muestra sol (si estás en oscuro, sugiere claro)
+  themeBtn.title = mode==='light' ? 'Cambiar a oscuro' : 'Cambiar a claro';
+}
+(function initTheme(){
+  const saved = localStorage.getItem('clip_theme_join');
+  applyTheme(saved || 'light'); // por defecto CLARO
+})();
+themeBtn.addEventListener('click', ()=>{
+  const current = localStorage.getItem('clip_theme_join') || 'light';
+  applyTheme(current==='light' ? 'dark' : 'light');
+});
 
+/* ========= Toast ========= */
+const toasts=document.getElementById('toasts');
+function showToast(m,k='info',t=2200){
+  const d=document.createElement('div');
+  d.className='toast '+(k==='success'?'success':k==='error'?'error':'');
+  d.innerHTML=`<i class="fa-solid ${k==='success'?'fa-circle-check':k==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${m}`;
+  toasts.appendChild(d); setTimeout(()=>d.remove(),t);
+}
+
+/* ========= WS + E2E (igual que tu versión estable) ========= */
 let ws=null, currentKey=null; const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
-function setStatus(ok){dot.style.background=ok?"#12b886":"#aaa";stxt.textContent=ok?"Conectado":"Desconectado";}
+function setStatus(ok){dot.style.background=ok?"#12b886":"#aaa";stxt.textContent=ok?"Conectado":"Desconectado"; document.getElementById('sendBack').disabled=!ok;}
 function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
 
-function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));} 
+function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
 function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
 async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
 async function encryptWithRoomKey(roomKey,plain){
@@ -95,9 +130,11 @@ function connect(key){
   };
 }
 
+/* Auto-join */
 const qp=new URLSearchParams(location.search);
 if(qp.get('key')){ currentKey=qp.get('key').toUpperCase(); document.getElementById('key').value=currentKey; connect(currentKey); }
 
+/* Acciones */
 document.getElementById('btnJoin').onclick=()=>{
   const k=(document.getElementById('key').value||'').trim().toUpperCase();
   if(!k){showToast('Introduce la clave','error');return;}

@@ -3,45 +3,79 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOLUTECH CLIP — v3.4.4</title>
+<title>SOLUTECH CLIP — v3.5</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
+<style>
+  /* --- Estilos mínimos para la pantalla inicial --- */
+  .landing {
+    max-width: 640px; margin: 40px auto; padding: 20px;
+    background: var(--card); border-radius: 16px; box-shadow: var(--shadow-md);
+  }
+  .landing h1 { display:flex; gap:10px; align-items:center; margin:0 0 12px 0; }
+  .landing .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .landing .hint { color:var(--muted); font-size:12px; margin-top:6px }
+  .hidden { display:none !important; }
+  .bigbtn { padding:12px 16px; font-size:16px; border-radius:12px; }
+  .input-fat { height:44px; border-radius:12px; padding:0 12px; width:100%; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; margin:12px auto; max-width:1100px; padding:0 8px; }
+</style>
 </head>
 <body>
-<!-- ╭──────────────────────────────── HEADER ────────────────────────────────╮ -->
-<div class="header">
-  <div class="brand">
+
+<!-- ╭────────────────────────── TOP BAR ──────────────────────────╮ -->
+<div class="topbar">
+  <div class="brand" style="display:flex; gap:10px; align-items:center">
     <div class="logo">S</div>
-    <h1>SOLUTECH CLIP — v3.4.4</h1>
+    <strong>SOLUTECH CLIP — v3.5</strong>
   </div>
-  <div class="controls">
-    <!-- Botón único para cambiar tema -->
-    <button id="themeToggle" class="btn btn-chip" title="Cambiar tema">
-      <i class="fa-solid fa-moon"></i>
+  <button id="themeToggle" class="btn btn-chip" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
+</div>
+<!-- ╰────────────────────────── TOP BAR ──────────────────────────╯ -->
+
+<!-- ╭────────────────────────── LANDING MINIMAL ──────────────────╮ -->
+<section id="landing" class="landing">
+  <h1>
+    <span class="logo">S</span> Inicio rápido
+  </h1>
+  <p class="hint">
+    Ingresa una <b>clave de sala</b> si quieres usar una propia. Si la dejas vacía, se generará automáticamente.
+  </p>
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0">
+    <input id="landingKey" class="input-fat field" placeholder="Clave personalizada (opcional, ej. ABC123)" maxlength="16" />
+  </div>
+  <div class="actions">
+    <button id="btnLandingCreate" class="btn btn-red bigbtn">
+      <i class="fa-solid fa-plus"></i> Crear
+    </button>
+    <button id="btnLandingJoin" class="btn btn-ghost bigbtn">
+      <i class="fa-solid fa-right-to-bracket"></i> Unirse
     </button>
   </div>
-</div>
-<!-- ╰──────────────────────────────── HEADER ────────────────────────────────╯ -->
+  <div class="hint">Por defecto: expira en <b>5 minutos</b> y <b>se destruye al leer</b> (single-use).</div>
+</section>
+<!-- ╰────────────────────────── LANDING MINIMAL ──────────────────╯ -->
 
-<div class="container">
+<!-- ╭────────────────────────── APP COMPLETA ──────────────────────╮ -->
+<div id="app" class="container hidden">
   <div class="grid">
-    <!-- ╭────────────────────────── PANEL PRINCIPAL ─────────────────────────╮ -->
+    <!-- Panel principal -->
     <div class="card" id="card-main">
       <div class="row" style="justify-content:space-between;margin-bottom:8px">
         <span class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Sin sesión</span></span>
         <div class="row">
-          <input id="joinCode" class="input-pill field" placeholder="Código de sala (ABC123)" maxlength="6">
+          <input id="joinCode" class="input-pill field" placeholder="Código de sala (ABC123)" maxlength="16">
           <button id="btnJoinFromMain" class="btn btn-ghost"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
           <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
         </div>
       </div>
 
       <label>Texto</label>
-      <textarea id="txt" placeholder="Pega aquí…"></textarea>
+      <textarea id="txt" placeholder="(Opcional) Pega aquí el texto que desees enviar…"></textarea>
 
       <div class="row" style="gap:8px; flex-wrap:wrap; margin:8px 0">
-        <input id="customKey" class="input-pill field" placeholder="Clave manual (opcional, ej. ABC123)" maxlength="6">
+        <input id="customKey" class="input-pill field" placeholder="Clave manual (opcional)" maxlength="16">
         <small class="help">Si la dejas vacía, se genera automáticamente.</small>
       </div>
 
@@ -51,7 +85,7 @@
         <button id="btnCopy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
       </div>
 
-      <!-- Opciones avanzadas -->
+      <!-- Opciones avanzadas (fijas por defecto: 5 min + single-use) -->
       <details class="disclosure" style="margin-top:10px">
         <summary><i class="fa-solid fa-sliders"></i> Opciones avanzadas</summary>
         <div class="content">
@@ -59,8 +93,8 @@
             <label><input type="checkbox" id="singleUse" checked> Single-use (se destruye al leer)</label>
             <label>Expira
               <select id="ttl" class="input-pill">
-                <option value="300">5 min</option>
-                <option value="900" selected>15 min</option>
+                <option value="300" selected>5 min</option>
+                <option value="900">15 min</option>
                 <option value="1800">30 min</option>
                 <option value="3600">1 hora</option>
               </select>
@@ -83,9 +117,8 @@
       <hr class="sep">
       <div id="result" style="margin-top:6px"></div>
     </div>
-    <!-- ╰────────────────────────── PANEL PRINCIPAL ─────────────────────────╯ -->
 
-    <!-- ╭────────────────────────── PANEL LATERAL ───────────────────────────╮ -->
+    <!-- Panel lateral -->
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <strong>Sesiones recientes</strong>
@@ -96,40 +129,29 @@
       <div><strong>Datos de la sesión</strong></div>
       <div id="sessionInfo" style="font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted);font-size:12px;margin-top:6px">—</div>
     </div>
-    <!-- ╰────────────────────────── PANEL LATERAL ───────────────────────────╯ -->
   </div>
 
   <div class="footer">
-    <div style="margin:6px 0">© 2025 Solutech Panamá — Hecho con Cloudflare Workers + Durable Objects</div>
+    <div style="margin:6px 0">© 2025 Solutech Panamá — Cloudflare Workers + Durable Objects</div>
     <div>Soluciones reales a problemas tecnológicos • <a href="https://www.solutechpanama.com" target="_blank">Solutech Panamá</a> • <a href="https://wa.me/50768886778" target="_blank">WhatsApp Soporte</a></div>
   </div>
 </div>
+<!-- ╰────────────────────────── APP COMPLETA ──────────────────────╯ -->
 
 <div class="toast-wrap" id="toasts"></div>
-<button class="fab" id="fabCreate" title="Crear sesión"><i class="fa-solid fa-plus"></i></button>
 
 <script>
-/* ========= Tema claro/oscuro (botón simple, persistente) ========= */
+/* ========= Tema claro/oscuro ========= */
 const root=document.documentElement;
 const themeBtn=document.getElementById('themeToggle');
 function applyTheme(mode){
-  // 'light' | 'dark'
-  root.className='';
-  if(mode==='light') root.classList.add('light');
-  localStorage.setItem('clip_theme_index',''+mode);
-  themeBtn.innerHTML = mode==='light'
-    ? '<i class="fa-solid fa-moon"></i>'  // estás en claro → muestra luna (sugiere oscuro)
-    : '<i class="fa-solid fa-sun"></i>';  // estás en oscuro → muestra sol (sugiere claro)
+  root.className=''; if(mode==='light') root.classList.add('light');
+  localStorage.setItem('clip_theme_index',mode);
+  themeBtn.innerHTML = mode==='light' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
   themeBtn.title = mode==='light' ? 'Cambiar a oscuro' : 'Cambiar a claro';
 }
-(function initTheme(){
-  const saved=localStorage.getItem('clip_theme_index');
-  applyTheme(saved||'light');
-})();
-themeBtn.addEventListener('click',()=>{
-  const cur=localStorage.getItem('clip_theme_index')||'light';
-  applyTheme(cur==='light'?'dark':'light');
-});
+(function(){applyTheme(localStorage.getItem('clip_theme_index')||'light')})();
+themeBtn.addEventListener('click',()=>{const cur=localStorage.getItem('clip_theme_index')||'light';applyTheme(cur==='light'?'dark':'light');});
 
 /* ========= Toast ========= */
 const toasts=document.getElementById('toasts');
@@ -145,21 +167,15 @@ const dot=document.getElementById("dot"), stxt=document.getElementById("stxt"), 
 let ws=null, currentKey=null, expiresAt=0, lastJoinUrl=null;
 
 function setStatus(ok){dot.style.background=ok?"#12b886":"#aaa";stxt.textContent=ok?`Conectado — ${currentKey}`:"Sin sesión";document.getElementById("btnLogout").disabled=!ok;document.getElementById("btnUpdate").disabled=!ok;}
-
 function loadHistory(){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");historyBox.innerHTML="";list.slice(0,8).forEach(it=>{const chip=document.createElement("div");chip.className="chip";chip.textContent=`${it.key} · ${new Date(it.when).toLocaleString()}`;chip.onclick=()=>window.open(it.joinUrl,"_blank");historyBox.appendChild(chip);});}
 function saveHistory(key,joinUrl){const list=JSON.parse(localStorage.getItem("clip_history")||"[]");list.unshift({key,joinUrl,when:Date.now()});localStorage.setItem("clip_history",JSON.stringify(list.slice(0,12)));loadHistory();}
 document.getElementById('btnClearHist').onclick=()=>{localStorage.removeItem('clip_history');loadHistory();showToast('Historial borrado','success');};
 
-/* ========= QR (simple, sin overlay) ========= */
+/* ========= QR (simple) ========= */
 function qrFor(joinUrl){return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&ecc=H&format=svg&margin=2&data=${encodeURIComponent(joinUrl)}`;}
-function renderQR(joinUrl){
-  const wrap=document.createElement('div'); wrap.className='qr-wrap';
-  const img=document.createElement('img'); img.alt='QR'; img.loading='lazy'; img.referrerPolicy='no-referrer'; img.src = qrFor(joinUrl);
-  wrap.appendChild(img);
-  return wrap;
-}
+function renderQR(joinUrl){const wrap=document.createElement('div'); wrap.className='qr-wrap'; const img=document.createElement('img'); img.alt='QR'; img.loading='lazy'; img.referrerPolicy='no-referrer'; img.src=qrFor(joinUrl); wrap.appendChild(img); return wrap;}
 
-/* ========= WS & E2E ========= */
+/* ========= WebSocket + E2E ========= */
 function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
 function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));} 
 function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
@@ -179,7 +195,6 @@ async function decryptWithRoomKey(roomKey,payload){
   const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64toU8(payload.iv)},key,b64toU8(payload.cipher));
   return new TextDecoder().decode(pt);
 }
-
 function connectWS(key,onOpenSend){
   if(ws) try{ ws.close(); }catch{}
   ws=new WebSocket(wsUrlFor(key));
@@ -208,20 +223,11 @@ function connectWS(key,onOpenSend){
   };
 }
 
-/* ========= Acciones ========= */
-async function createSession(){
-  const text=document.getElementById("txt").value.trim();
-  if(!text){ showToast('Pega el texto primero','error'); return; }
-
-  const singleUse=document.getElementById("singleUse").checked;
-  const ttl=parseInt(document.getElementById("ttl").value,10);
-  const ck=(document.getElementById("customKey").value||"").toUpperCase().trim();
-  const customKey=/^[A-Z0-9]{6}$/.test(ck)?ck:undefined;
-
-  const r=await fetch("/api/create",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({singleUse,ttlSeconds:ttl,customKey})});
+/* ========= Acciones del APP ========= */
+async function createSession(ttl=300,single=true,customKey){
+  const r=await fetch("/api/create",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({singleUse:single,ttlSeconds:ttl,customKey})});
   const data=await r.json();
   if(!data.ok){ showToast(data.error||'No se pudo crear la sesión','error'); return; }
-
   currentKey=data.key; expiresAt=data.expiresAt; lastJoinUrl=data.joinUrl;
 
   result.innerHTML="";
@@ -240,6 +246,8 @@ async function createSession(){
   saveHistory(currentKey,lastJoinUrl);
 
   connectWS(currentKey, async ()=>{
+    const text=document.getElementById("txt").value.trim();
+    if(!text) return; // crear sin texto, como pediste
     const envelope=JSON.stringify({kind:"text",text});
     const encrypted=await encryptWithRoomKey(currentKey,envelope);
     const file_limit_kb=Number(document.getElementById("fileLimit").value||150);
@@ -251,14 +259,15 @@ async function createSession(){
 function updateSend(){
   if(!ws||ws.readyState!==1){ showToast('No hay sesión activa','error'); return; }
   const text=document.getElementById("txt").value.trim();
-  if(!text){ showToast('Nada que enviar','error'); return; }
-  (async ()=>{
+  const send = async ()=>{
     const env=JSON.stringify({kind:"text",text});
     const enc=await encryptWithRoomKey(currentKey,env);
     const file_limit_kb=Number(document.getElementById("fileLimit").value||150);
     ws.send(JSON.stringify({type:"send-e2e",payload:{kind:"text",data:enc},file_limit_kb}));
     showToast('Reenviado','success');
-  })();
+  };
+  if(!text){ showToast('Nada que enviar','error'); return; }
+  send();
 }
 
 function sendFile(){
@@ -281,20 +290,42 @@ function sendFile(){
 function logout(){ try{ws&&ws.close();}catch{}; ws=null; currentKey=null; lastJoinUrl=null; setStatus(false); sessionInfo.textContent="—"; showToast('Cerraste la sesión'); }
 function joinFromMain(){ const code=(document.getElementById("joinCode").value||"").trim().toUpperCase(); if(!code){ showToast('Ingresa un código','error'); return; } currentKey=code; connectWS(code); }
 
-document.getElementById("btnCreate").onclick=createSession;
+document.getElementById("btnCreate").onclick=()=>createSession(parseInt(document.getElementById('ttl').value||'300',10),document.getElementById('singleUse').checked,(document.getElementById("customKey").value||"").trim()||undefined);
 document.getElementById("btnUpdate").onclick=updateSend;
 document.getElementById("btnCopy").onclick=()=>navigator.clipboard.writeText(document.getElementById("txt").value).then(()=>showToast('Texto copiado','success'));
 document.getElementById("btnLogout").onclick=logout;
 document.getElementById("btnJoinFromMain").onclick=joinFromMain;
 document.getElementById("btnSendFile").onclick=sendFile;
-document.getElementById("fabCreate").onclick=()=>{ if(!document.getElementById("txt").value.trim()){ showToast('Pega texto para crear','error'); return; } createSession(); };
 
-/* Auto-join desde ?key= */
+/* ========= Lógica de LANDING ========= */
+const landingEl=document.getElementById('landing');
+const appEl=document.getElementById('app');
+function showApp(){ landingEl.classList.add('hidden'); appEl.classList.remove('hidden'); loadHistory(); }
+
+document.getElementById('btnLandingCreate').onclick=async ()=>{
+  const raw=(document.getElementById('landingKey').value||'').trim().toUpperCase() || undefined;
+  showApp();
+  // Por defecto: 5 min, single-use ON
+  await createSession(300,true,raw);
+  // precarga el código en el campo del panel
+  if(currentKey) document.getElementById('joinCode').value=currentKey;
+  if(raw) document.getElementById('customKey').value=raw;
+};
+
+document.getElementById('btnLandingJoin').onclick=()=>{
+  const raw=(document.getElementById('landingKey').value||'').trim().toUpperCase();
+  if(!raw){ showToast('Ingresa la clave para unirte','error'); return; }
+  showApp();
+  document.getElementById('joinCode').value=raw;
+  joinFromMain();
+};
+
+/* ========= Auto-join por ?key= (salta landing) ========= */
 const qp=new URLSearchParams(location.search);
-if(qp.get("key")){ currentKey=qp.get("key").toUpperCase(); document.getElementById("joinCode").value=currentKey; connectWS(currentKey); }
-
-/* Init */
-loadHistory();
+if(qp.get("key")){
+  document.getElementById('landingKey').value=qp.get("key").toUpperCase();
+  document.getElementById('btnLandingJoin').click();
+}
 </script>
 </body>
 </html>
