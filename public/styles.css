@@ -7,7 +7,7 @@
 }
 :root.light{
   --bg:#f6f7f9; --card:#ffffff; --ink:#101114; --muted:#6a6f7a; --line:#e8eaef; --chip:#f0f1f4;
-  --accent:#e10600; --accent2:#ff4d40;
+  --accent:#ff1748; --accent2:#ff1748;
   --shadow-md:0 10px 30px rgba(0,0,0,.10);
   color-scheme:light;
 }
