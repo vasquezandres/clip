@@ -3,153 +3,155 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Unirse — SOLUTECH CLIP v3.4.3</title>
+<title>Unirse — SOLUTECH CLIP</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="favicon.ico">
 <style>.container{max-width:980px;margin:20px auto;padding:12px}textarea{min-height:180px}</style>
 </head>
 <body>
-<!-- Header con toggle Claro/Oscuro -->
-<div class="header">
+
+<div class="topbar">
   <div class="brand">
     <div class="logo">S</div>
-    <h1>Unirse — SOLUTECH CLIP</h1>
+    <strong>SOLUTECH CLIP — Unirse</strong>
   </div>
-  <div class="controls">
-    <button id="themeToggle" class="btn btn-chip" title="Cambiar tema">
-      <i class="fa-solid fa-moon"></i>
-    </button>
-  </div>
+  <button id="themeToggle" class="btn btn-chip" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
 </div>
 
 <div class="container">
   <div class="card">
-    <div class="row" style="justify-content:space-between;margin-bottom:8px">
-      <div class="status"><span id="dot" class="dot" style="background:#aaa"></span><span id="stxt">Desconectado</span></div>
+
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="status">
+        <span id="dot" class="dot"></span>
+        <span id="stxt">Desconectado</span>
+      </div>
       <div class="row">
-        <input id="key" class="input-pill field" placeholder="Código de sala (ABC123)" maxlength="6">
+        <input id="key" class="input-pill field" placeholder="Código (ABC123)"
+               maxlength="6" autocapitalize="characters" autocorrect="off" spellcheck="false">
         <button id="btnJoin" class="btn btn-red"><i class="fa-solid fa-right-to-bracket"></i> Unirse</button>
-        <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+        <button id="btnLogout" class="btn btn-ghost" disabled><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
       </div>
     </div>
 
-    <label>Texto</label>
-    <textarea id="txt" placeholder="Esperando mensaje…"></textarea>
+    <label>Texto recibido</label>
+    <textarea id="txt" placeholder="Escribe aquí…"></textarea>
 
     <div class="row" style="margin-top:10px">
-      <button id="copy" class="btn btn-ghost"><i class="fa-solid fa-copy"></i> Copiar</button>
-      <button id="sendBack" class="btn btn-red" disabled><i class="fa-solid fa-paper-plane"></i> Enviar</button>
-      <button id="markRead" class="btn btn-ghost" style="display:none"><i class="fa-solid fa-check-double"></i> Marcar leído</button>
+      <button id="copy" class="btn btn-ghost">
+        <i class="fa-solid fa-copy" id="copyIcon"></i> Copiar
+      </button>
+      <button id="sendBack" class="btn btn-red" disabled>
+        <i class="fa-solid fa-paper-plane"></i> Enviar de vuelta
+      </button>
+      <button id="markRead" class="btn btn-ghost" style="display:none">
+        <i class="fa-solid fa-check-double"></i> Marcar leído
+      </button>
     </div>
+
   </div>
 </div>
 
 <div class="toast-wrap" id="toasts"></div>
 
-<script>
-/* ========= Tema claro/oscuro (persistente) ========= */
-const root=document.documentElement;
-const themeBtn=document.getElementById('themeToggle');
-function applyTheme(mode){
-  // modes: 'light' | 'dark'
-  root.className='';
-  if(mode==='light') root.classList.add('light');
-  localStorage.setItem('clip_theme_join', mode);
-  themeBtn.innerHTML = mode==='light'
-    ? '<i class="fa-solid fa-moon"></i>'   // muestra luna (si estás en claro, el botón sugiere cambiar a oscuro)
-    : '<i class="fa-solid fa-sun"></i>';   // muestra sol (si estás en oscuro, sugiere claro)
-  themeBtn.title = mode==='light' ? 'Cambiar a oscuro' : 'Cambiar a claro';
-}
-(function initTheme(){
-  const saved = localStorage.getItem('clip_theme_join');
-  applyTheme(saved || 'light'); // por defecto CLARO
-})();
-themeBtn.addEventListener('click', ()=>{
-  const current = localStorage.getItem('clip_theme_join') || 'light';
-  applyTheme(current==='light' ? 'dark' : 'light');
-});
+<script type="module">
+import {
+  initTheme, showToast,
+  encryptWithRoomKey, decryptWithRoomKey,
+  flashTextarea, setDotStatus, WSManager
+} from './clip-core.js';
 
-/* ========= Toast ========= */
-const toasts=document.getElementById('toasts');
-function showToast(m,k='info',t=2200){
-  const d=document.createElement('div');
-  d.className='toast '+(k==='success'?'success':k==='error'?'error':'');
-  d.innerHTML=`<i class="fa-solid ${k==='success'?'fa-circle-check':k==='error'?'fa-triangle-exclamation':'fa-circle-info'}"></i> ${m}`;
-  toasts.appendChild(d); setTimeout(()=>d.remove(),t);
+initTheme('themeToggle');
+
+let wsm = null, currentKey = null;
+
+function setStatus(ok) {
+  setDotStatus('dot', ok);
+  document.getElementById('stxt').textContent     = ok ? 'Conectado' : 'Desconectado';
+  document.getElementById('btnLogout').disabled   = !ok;
+  document.getElementById('sendBack').disabled    = !ok;
 }
 
-/* ========= WS + E2E (igual que tu versión estable) ========= */
-let ws=null, currentKey=null; const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
-function setStatus(ok){dot.style.background=ok?"#12b886":"#aaa";stxt.textContent=ok?"Conectado":"Desconectado"; document.getElementById('sendBack').disabled=!ok;}
-function wsUrlFor(key){const proto=location.protocol==="https:"?"wss":"ws";return `${proto}://${location.host}/ws?key=${encodeURIComponent(key)}`;}
-
-function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
-function b64toU8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
-async function deriveKeyFromRoom(roomKey){const enc=new TextEncoder();return crypto.subtle.importKey("raw",enc.encode(roomKey),"PBKDF2",false,["deriveKey"]);}
-async function encryptWithRoomKey(roomKey,plain){
-  const enc=new TextEncoder();
-  const keyMat=await deriveKeyFromRoom(roomKey);
-  const salt=crypto.getRandomValues(new Uint8Array(16));
-  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["encrypt"]);
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(plain));
-  return {cipher:b64(ct),iv:b64(iv),salt:b64(salt),alg:"AES-GCM/PBKDF2"};
-}
-async function decryptWithRoomKey(roomKey,payload){
-  const keyMat=await deriveKeyFromRoom(roomKey);
-  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64toU8(payload.salt),iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["decrypt"]);
-  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64toU8(payload.iv)},key,b64toU8(payload.cipher));
-  return new TextDecoder().decode(pt);
-}
-
-function connect(key){
-  if(ws) try{ws.close();}catch{};
-  ws=new WebSocket(wsUrlFor(key));
-  ws.onopen=()=>{setStatus(true);document.getElementById("btnLogout").disabled=false;showToast('Conectado','success');};
-  ws.onclose=()=>{setStatus(false);document.getElementById("btnLogout").disabled=true;showToast('Desconectado');};
-  ws.onmessage=async (ev)=>{
-    const msg=JSON.parse(ev.data);
-    if(msg.type==='joined'){document.getElementById('markRead').style.display=msg.singleUse?'inline-block':'none';}
-    if(msg.type==='new-e2e'){
-      try{
-        const plain=await decryptWithRoomKey(currentKey,msg.payload.data);
-        const envelope=JSON.parse(plain);
-        if(envelope.kind==='text'){ document.getElementById('txt').value=envelope.text||''; showToast('Texto recibido','success'); }
-        if(envelope.kind==='file'){
-          const a=document.createElement('a');
-          a.href=`data:${envelope.mime};base64,${envelope.dataBase64}`;
-          a.download=envelope.name||'archivo';
-          a.textContent=`Descargar adjunto: ${envelope.name}`;
-          a.style.display='inline-block'; a.style.marginTop='6px';
-          document.querySelector('.card').appendChild(a);
-          showToast('Archivo recibido','success');
-        }
-      }catch{ document.getElementById('txt').value='(No se pudo descifrar el contenido con esta clave)'; showToast('No se pudo descifrar','error'); }
+async function handleMessage(ev) {
+  const msg = JSON.parse(ev.data);
+  if (msg.type === 'joined') {
+    document.getElementById('markRead').style.display = msg.singleUse ? 'inline-flex' : 'none';
+  }
+  if (msg.type === 'session-destroyed') {
+    showToast('Sesión eliminada (single-use)', 'info');
+    setStatus(false); wsm && wsm.destroy(); wsm = null;
+  }
+  if (msg.type === 'error') { showToast('Error: ' + msg.error, 'error'); }
+  if (msg.type === 'new-e2e') {
+    try {
+      const plain = await decryptWithRoomKey(currentKey, msg.payload.data);
+      const env   = JSON.parse(plain);
+      if (env.kind === 'text') {
+        document.getElementById('txt').value = env.text || '';
+        flashTextarea('txt');
+        showToast('Texto recibido', 'success');
+      }
+      if (env.kind === 'file') {
+        const a = document.createElement('a');
+        a.href = `data:${env.mime};base64,${env.dataBase64}`;
+        a.download = env.name || 'archivo';
+        a.textContent = `Descargar adjunto: ${env.name}`;
+        a.style.cssText = 'display:inline-block;margin-top:8px';
+        document.querySelector('.card').appendChild(a);
+        showToast('Archivo recibido', 'success');
+      }
+    } catch {
+      document.getElementById('txt').value = '(No se pudo descifrar el contenido con esta clave)';
+      showToast('No se pudo descifrar', 'error');
     }
-  };
+  }
 }
 
-/* Auto-join */
-const qp=new URLSearchParams(location.search);
-if(qp.get('key')){ currentKey=qp.get('key').toUpperCase(); document.getElementById('key').value=currentKey; connect(currentKey); }
+function connect(key) {
+  currentKey = key.toUpperCase();
+  if (wsm) wsm.destroy(false);
+  wsm = new WSManager({ key: currentKey, onStatus: setStatus, onMessage: handleMessage });
+  wsm.connect();
+}
 
-/* Acciones */
-document.getElementById('btnJoin').onclick=()=>{
-  const k=(document.getElementById('key').value||'').trim().toUpperCase();
-  if(!k){showToast('Introduce la clave','error');return;}
-  currentKey=k; connect(k);
+/* Auto-join desde ?key= */
+const qp = new URLSearchParams(location.search);
+if (qp.get('key')) {
+  const k = qp.get('key').toUpperCase();
+  document.getElementById('key').value = k;
+  connect(k);
+}
+
+document.getElementById('btnJoin').onclick = () => {
+  const k = (document.getElementById('key').value || '').trim().toUpperCase();
+  if (!k)                        { showToast('Introduce la clave', 'error'); return; }
+  if (!/^[A-Z0-9]{6}$/.test(k)) { showToast('El código debe tener exactamente 6 caracteres', 'error'); return; }
+  connect(k);
 };
-document.getElementById('btnLogout').onclick=()=>{try{ws&&ws.close();}catch{}};
-document.getElementById('copy').onclick=async ()=>{const t=document.getElementById('txt').value||'';await navigator.clipboard.writeText(t);showToast('Copiado','success');};
-document.getElementById('sendBack').onclick=async ()=>{
-  if(!ws||ws.readyState!==1){showToast('No hay conexión','error');return;}
-  const env=JSON.stringify({kind:'text',text:document.getElementById('txt').value});
-  const enc=await encryptWithRoomKey(currentKey,env);
-  ws.send(JSON.stringify({type:'send-e2e',payload:{kind:'text',data:enc}}));
-  showToast('Enviado','success');
+
+document.getElementById('btnLogout').onclick = () => {
+  wsm && wsm.destroy(true); wsm = null;
+  setStatus(false);
+  showToast('Cerraste la sesión');
 };
-document.getElementById('markRead').onclick=()=>{ if(!ws)return; ws.send(JSON.stringify({type:'read'})); };
+
+document.getElementById('copy').onclick = async () => {
+  await navigator.clipboard.writeText(document.getElementById('txt').value || '');
+  showToast('Copiado', 'success');
+  const ic = document.getElementById('copyIcon');
+  ic.className = 'fa-solid fa-check';
+  setTimeout(() => { ic.className = 'fa-solid fa-copy'; }, 1500);
+};
+
+document.getElementById('sendBack').onclick = async () => {
+  if (!wsm?.ready) { showToast('No hay conexión', 'error'); return; }
+  const enc = await encryptWithRoomKey(currentKey, JSON.stringify({ kind: 'text', text: document.getElementById('txt').value }));
+  wsm.send({ type: 'send-e2e', payload: { kind: 'text', data: enc } });
+  showToast('Enviado', 'success');
+};
+
+document.getElementById('markRead').onclick = () => wsm?.send({ type: 'read' });
 </script>
 </body>
 </html>
