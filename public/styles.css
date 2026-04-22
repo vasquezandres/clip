@@ -1,7 +1,7 @@
 /* ── Variables ── */
 :root{
   --bg:#0f1115; --card:#151821; --ink:#f4f6fb; --muted:#a9b2c0; --line:#272b36; --chip:#1b1f2b;
-  --accent:#ff2d20; --accent2:#ff6a00;
+  --accent:#ff1748; --accent2:#ff1748;
   --shadow-md:0 10px 30px rgba(0,0,0,.28);
   color-scheme:dark;
 }
